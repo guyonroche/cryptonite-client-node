@@ -1,0 +1,19 @@
+{
+  "name": "cryptonite-client-node",
+  "version": "1.0.0",
+  "description": "Node client for cryptonite",
+  "main": "lib/cryptonite-client.js",
+  "engines": {
+    "node": ">8.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "promish": "^5.0.2",
+    "ws": "^3.3.3"
+  }
+}
