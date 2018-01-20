@@ -2,5 +2,8 @@
   "protocol": "https:",
   "hostname": "13.56.205.92",
   "apiKey": "api-key goes here",
-  "apiSecret": "api-secret goes here"
+  "apiSecret": "api-secret goes here",
+  "options": {
+    "rejectUnauthorized": false
+  }
 }
