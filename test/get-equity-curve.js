@@ -1,5 +1,5 @@
 const CryptoniteClient = require('../lib/cryptonite-client');
-const config = require('../config.json');
+const config = require('./config.json');
 
 const client = new CryptoniteClient(config);
 
