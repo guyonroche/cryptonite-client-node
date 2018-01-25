@@ -6,7 +6,7 @@ const client = new CryptoniteClient(config);
 const start = process.argv[2];
 const limit = process.argv[3];
 
-client.getMyTransaction(start, limit)
+client.getMyTransactions(start, limit)
   .then(result => {
     console.log(result);
   })
