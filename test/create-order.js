@@ -19,15 +19,9 @@ const order = {
 
 const client = new CryptoniteClient(config);
 
-client.on('message', message => {
-  if (message.msg !== 'open-markets') {
-    console.log(message);
-  }
-});
-
-client.connect()
-  .then(() => {
-    client.createOrder(order);
+client.createAnOrder(order)
+  .then(result => {
+    console.log(result);
   })
   .catch(error => {
     console.error(error.stack);
