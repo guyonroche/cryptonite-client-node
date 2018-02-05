@@ -1,16 +1,16 @@
 const CryptoniteClient = require('../lib/cryptonite-client');
 const config = require('./config.json');
 
+
+const market = process.argv[2];
+
 const client = new CryptoniteClient(config);
 
-const start = process.argv[2];
-const limit = process.argv[3];
-
-
-client.getMyOrders(start, limit)
+client.cancelMarketOrders(market)
   .then(result => {
-    console.log(JSON.stringify(result));
+    console.log(result);
   })
   .catch(error => {
     console.error(error.stack);
   });
+
