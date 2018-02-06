@@ -6,7 +6,7 @@ const orderId = process.argv[2];
 
 const client = new CryptoniteClient(config);
 
-client.cancelAnOrder(orderId)
+client.cancelOrder(orderId)
   .then(result => {
     console.log(result);
   })

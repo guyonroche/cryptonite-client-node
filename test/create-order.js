@@ -19,7 +19,7 @@ const order = {
 
 const client = new CryptoniteClient(config);
 
-client.createAnOrder(order)
+client.createOrder(order)
   .then(result => {
     console.log(result);
   })
