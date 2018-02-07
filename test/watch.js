@@ -2,7 +2,7 @@ const CryptoniteClient = require('../lib/cryptonite-client');
 const config = require('./config.json');
 
 const client = new CryptoniteClient(config);
-const [node, script, ...subscriptions] = process.argv;
+const subscriptions = process.argv.slice(2);
 
 client.on('message', message => {
   console.log(JSON.stringify(message));

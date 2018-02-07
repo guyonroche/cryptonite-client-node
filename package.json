@@ -7,29 +7,24 @@
     "node": ">8.5"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "nsp": "nsp check"
   },
-  "author": "",
-  "license": "ISC",
+  "pre-push": [
+    "nsp",
+    "lint"
+  ],
+  "author": "Guyon Roche",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.17.1",
     "promish": "^5.0.2",
     "ws": "^3.3.3"
   },
   "devDependencies": {
-    "babel-cli": "6.24.1",
-    "babel-core": "6.24.1",
-    "babel-eslint": "8.2.1",
-    "babel-loader": "7.0.0",
-    "babel-plugin-istanbul": "4.1.4",
-    "babel-plugin-lodash": "^3.2.11",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "6.23.0",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.16.0",
-    "babel-register": "^6.24.1",
-    "eslint": "^4.16.0"
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.17.0",
+    "nsp": "^3.1.0",
+    "pre-push": "^0.1.1"
   }
 }
