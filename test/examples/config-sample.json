@@ -1,6 +1,6 @@
 {
   "protocol": "https:",
-  "hostname": "13.56.205.92",
+  "hostname": "server-host goes here",
   "apiKey": "api-key goes here",
   "apiSecret": "api-secret goes here",
   "options": {

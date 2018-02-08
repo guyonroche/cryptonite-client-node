@@ -1,4 +1,4 @@
-const CryptoniteClient = require('../lib/cryptonite-client');
+const CryptoniteClient = require('../../lib/cryptonite-client');
 const config = require('./config.json');
 
 const market = process.argv[2];
