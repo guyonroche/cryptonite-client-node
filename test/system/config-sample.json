@@ -1,0 +1,25 @@
+{
+  "name":"trader name",
+  "protocol":"https:",
+  "hostname":"server-host goes here",
+  "apiKey":"api-key goes here",
+  "apiSecret":"api-secret goes here",
+  "options":{
+    "rejectUnauthorized":false
+  },
+  "coinSymbol":"BTC",
+  "capitalSymbol":"LTC",
+  "balance":{
+    "assets":0,
+    "capital":1,
+    "maxAssetsToUse":0.005,
+    "maxCapitalToUse":0.005
+  },
+  "state":{
+    "start": {
+      "assets": 0,
+      "capital": 0,
+      "price": 0
+    }
+  }
+}
