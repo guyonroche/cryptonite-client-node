@@ -1,5 +1,5 @@
-const trader = require('../system/trader');
-const config = require('../system/config.json');
+const trader = require('./trader');
+const config = require('./config.json');
 new trader(config);
 
 
