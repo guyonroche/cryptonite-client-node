@@ -1,5 +1,9 @@
 const trader = require('./trader');
 const config = require('./config.json');
-new trader(config);
+const traders = config.traders;
+let tradersList  = {};
 
+traders.forEach(config => {
+  tradersList[config.name] = new trader(config);
+});
 

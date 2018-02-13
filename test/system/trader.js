@@ -1,6 +1,16 @@
 const  CryptoniteClient = require('../../lib/cryptonite-client');
 const logInitialDetails = require('./initilaLogger');
+const config = require('./config.json');
 
+let allConfig = config.traders;
+let timer;
+
+let orderbook = {
+  prices : [],
+  quantities : []
+};
+
+let traders = {};
 class Trader {
 
   constructor(config) {
@@ -12,7 +22,6 @@ class Trader {
 
   init_state() {
     return new Promise((resolve)=> {
-      this._myorders = {updated: undefined, data: undefined, errors: []};
       this.client.connect()
         .then(() => {
           this.client.getBalances()
@@ -23,24 +32,21 @@ class Trader {
               this.config.state.start.assets = balanceData.btc.availableBalance;
               this.config.state.start.capital = balanceData.ltc.availableBalance;
               this.logInitialDetails(this.config);
-              return this.client.getMyOrders(1, 4);
-            })
-            .then((data) => {
-              this._myorders.updated = new Date();
-              this._myorders.data = data.orders;
-              console.log('current orderd are : ', this._myorders);
-              this.start_trading();
+              setTimeout(()=>{
+                this.start_trading();
+              }, 500);
               resolve();
-            })
-            .catch(err =>{console.log(err);});
+            });
         });
     });
-
   }
 
   logInitialDetails(config) {
-    logInitialDetails({
-      config,
+    return new Promise((resolve) =>{
+      logInitialDetails({
+        config,
+      });
+      resolve();
     });
   }
 
@@ -74,34 +80,73 @@ class Trader {
   cancelAllOrders() {
     let self = this;
     return new Promise((resolve) => {
-      self.client.cancelMarketOrders(self.market)
-        .then(() => {
-          console.log('all orders are cancelled');
-          self.logInitialDetails(self.config);
-          process.exit();
-          resolve();
-        })
-        .catch(err => {
-          console.log(err.message);
-        });
+      if(self.config.name === 'trader1') {
+        self.client.cancelMarketOrders(self.market)
+          .then(() => {
+            console.log('all orders are cancelled for ', self.config.name);
+            allConfig.forEach(config => {
+              self.logInitialDetails(config);
+            });
+            process.exit();
+            resolve();
+          })
+          .catch(err => {
+            console.log(err.message);
+          });
+      }
     });
   }
 
   _execute_trading_strategy() {
     let promises = [];
-    let side;
-    for (let i = 0; i < 4; i++) {
-      side = i <= 1 ? 'B' : 'S';
-      promises.push(this.placeOrder(side));
+    if (this.config.name === 'trader1') {
+      let side;
+      for (let i = 0; i < 4; i++) {
+        side = i <= 1 ? 'B' : 'S';
+        promises.push(this.placeOrder(side));
+      }
+      Promise.all(promises)
+        .then(() => {
+          this.subscribeToMessages();
+          return setTimeout(function() {
+            if (this.config.name === 'trader1')
+              this.cancelAllOrders();
+            clearInterval(timer);
+          }.bind(this), 30000);
+        });
     }
+    else {
+      timer = setInterval(function() {
+        if (this.config.name === 'trader2' && orderbook.quantities.length) {
+          return new Promise(async()=>{
+            await this.placeOrder('S');
+            await this.subscribeToMessages();
+            await allConfig.forEach(config => {
+              this.logInitialDetails(config);
+            });
+            await this.placeOrder('B');
+            clearInterval(timer);
 
-    Promise.all(promises)
-      .then(() => {
-        this.cancelAllOrders();
-      })
-      .catch(err => {
-        console.log(err);
-      });
+          }).catch(err =>{
+            console.log(err);
+            clearInterval(timer);
+          });
+        }
+      }.bind(this), 1000);
+    }
+  }
+
+  subscribeToMessages() {
+    return new Promise((resolve) => {
+      traders[this.config.name] =
+        this.client.on('message', message => {
+          if (message.msg !== 'open-markets') {
+            console.log(JSON.stringify(message), this.config.name);
+            resolve(true);
+          }
+        });
+      resolve(true);
+    });
   }
 
   placeOrder(side) {
@@ -119,17 +164,39 @@ class Trader {
         else {
           this.updateBalance('ASSETS', currentAssets + calcCoins.coinsToBuy);
           this.updateBalance('CAPITAL', currentCapital - calcCoins.totalCost);
+          this.getLastBuyPriceAndQuntity(price, calcCoins.coinsToBuy);
           resolve(this.createOrder(price, side, calcCoins.coinsToBuy));
         }
       }
       else {
-        const maxAssetsToUse = currentAssets * (this.config.balance.maxAssetsToUse / 100);
-        if (currentAssets > 0) {
-          let assetsToSell = maxAssetsToUse;
-          let totalCost = assetsToSell * price;
-          this.updateBalance('ASSETS', currentAssets - assetsToSell);
-          this.updateBalance('CAPITAL', currentCapital + totalCost);
-          resolve(this.createOrder(price, side, assetsToSell));
+        const maxAssetsToUse = currentCapital * (this.config.balance.maxAssetsToUse / 100);
+        if (maxAssetsToUse > 0) {
+          if(this.config.name === 'trader2') {
+            let quntities = orderbook.quantities.map(q => {
+              return q;
+            });
+
+            if(quntities.length){
+              const assetsToSell =  Math.max(...quntities);
+              if(assetsToSell < currentCapital) {
+                let totalCost = assetsToSell * price;
+                this.updateBalance('ASSETS', currentAssets - assetsToSell);
+                this.updateBalance('CAPITAL', currentCapital + totalCost);
+                resolve(this.createOrder(price, side, assetsToSell / 2));
+              }
+              else {
+                console.log('don\'t have enough assets to sell');
+                resolve(true);
+              }
+            }
+
+          } else {
+            let assetsToSell = maxAssetsToUse;
+            let totalCost = assetsToSell * price;
+            this.updateBalance('ASSETS', currentAssets - assetsToSell);
+            this.updateBalance('CAPITAL', currentCapital + totalCost);
+            resolve(this.createOrder(price, side, assetsToSell));
+          }
         }
         else {
           console.log('don\'t have an assets to sell');
@@ -139,8 +206,17 @@ class Trader {
     });
   }
 
+  getLastBuyPriceAndQuntity(price, quantity) {
+    if(this.config.name === 'trader1') {
+      orderbook.prices.push(price);
+      orderbook.quantities.push(quantity);
+      this.config.state.last.price = price;
+      this.config.state.last.quantity = quantity;
+    }
+  }
+
   createOrder(price, side, quantity) {
-    return new Promise((resolve => {
+    return new Promise((resolve, reject) => {
       const market = this.market;
       const type = 'L';
       const order = {
@@ -150,19 +226,21 @@ class Trader {
         quantity,
         price,
       };
+
       this.client.createOrder(order)
         .then(() => {
-          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Amout is', quantity * price, 'order placed');
+          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Amout is', quantity * price, 'order placed', this.config.name);
           resolve(true);
         }).catch(err => {
           console.log(err);
+          reject(false);
         });
-    }));
+    });
   }
 
   calcMaxCoinsToBuy(price) {
     const currentCapital = this.getBalance().capital;
-    const maxCapitalToUse = currentCapital * (this.config.balance.maxCapitalToUse / 100);
+    const maxCapitalToUse = currentCapital * (this.config.balance.maxCapitalToUse / 10000);
     if (currentCapital <= 0.01) {
       // Not enough minimum capital to purchase from Exchange.
       return {
