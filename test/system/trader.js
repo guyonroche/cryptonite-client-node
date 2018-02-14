@@ -107,32 +107,37 @@ class Trader {
       }
       Promise.all(promises)
         .then(() => {
-          this.subscribeToMessages();
-          return setTimeout(function() {
-            if (this.config.name === 'trader1')
-              this.cancelAllOrders();
-            clearInterval(timer);
-          }.bind(this), 30000);
+          let self = this;
+          self.subscribeToMessages();
+          return setTimeout(() => {
+            if (self.config.name === 'trader1')
+              self.cancelAllOrders();
+          }, 30000);
         });
     }
     else {
-      timer = setInterval(function() {
-        if (this.config.name === 'trader2' && orderbook.quantities.length) {
+      let count = 0;
+      timer = setInterval(() => {
+        let self  = this;
+        if (self.config.name === 'trader2' && orderbook.quantities.length) {
+          count = count + 1;
           return new Promise(async()=>{
-            await this.placeOrder('S');
-            await this.subscribeToMessages();
+            await self.placeOrder('S');
+            await self.subscribeToMessages();
             await allConfig.forEach(config => {
-              this.logInitialDetails(config);
+              self.logInitialDetails(config);
             });
-            await this.placeOrder('B');
-            clearInterval(timer);
+            if(count === 1){
+              clearInterval(timer);
+            }
+            await self.placeOrder('B');
 
-          }).catch(err =>{
+          }).catch(err => {
             console.log(err);
             clearInterval(timer);
           });
         }
-      }.bind(this), 1000);
+      }, 8000);
     }
   }
 
@@ -158,7 +163,7 @@ class Trader {
       if (side === 'B') {
         let calcCoins = this.calcMaxCoinsToBuy(price);
         if (calcCoins.coinsToBuy === 0) {
-          console.log('Not enough capital to initiate order');
+          console.log('Not enough capital to initiate order', this.config.name);
           resolve(true);
         }
         else {
@@ -185,7 +190,7 @@ class Trader {
                 resolve(this.createOrder(price, side, assetsToSell / 2));
               }
               else {
-                console.log('don\'t have enough assets to sell');
+                console.log('don\'t have enough assets to sell', this.config.name);
                 resolve(true);
               }
             }
@@ -199,7 +204,7 @@ class Trader {
           }
         }
         else {
-          console.log('don\'t have an assets to sell');
+          console.log('don\'t have an assets to sell', this.config.name);
           resolve(true);
         }
       }
@@ -226,7 +231,6 @@ class Trader {
         quantity,
         price,
       };
-
       this.client.createOrder(order)
         .then(() => {
           console.log((side === 'B' ? 'Buy' : 'Sell'), 'Amout is', quantity * price, 'order placed', this.config.name);
