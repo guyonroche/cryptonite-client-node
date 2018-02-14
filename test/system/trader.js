@@ -78,14 +78,13 @@ class Trader {
   }
 
   cancelAllOrders() {
-    let self = this;
     return new Promise((resolve) => {
-      if(self.config.name === 'trader1') {
-        self.client.cancelMarketOrders(self.market)
+      if(this.config.name === 'trader1') {
+        this.client.cancelMarketOrders(this.market)
           .then(() => {
-            console.log('all orders are cancelled for ', self.config.name);
+            console.log('all orders are cancelled for ', this.config.name);
             allConfig.forEach(config => {
-              self.logInitialDetails(config);
+              this.logInitialDetails(config);
             });
             process.exit();
             resolve();
@@ -107,30 +106,28 @@ class Trader {
       }
       Promise.all(promises)
         .then(() => {
-          let self = this;
-          self.subscribeToMessages();
+          this.subscribeToMessages();
           return setTimeout(() => {
-            if (self.config.name === 'trader1')
-              self.cancelAllOrders();
+            if (this.config.name === 'trader1')
+              this.cancelAllOrders();
           }, 30000);
         });
     }
     else {
       let count = 0;
       timer = setInterval(() => {
-        let self  = this;
-        if (self.config.name === 'trader2' && orderbook.quantities.length) {
+        if (this.config.name === 'trader2' && orderbook.quantities.length) {
           count = count + 1;
           return new Promise(async()=>{
-            await self.placeOrder('S');
-            await self.subscribeToMessages();
+            await this.placeOrder('S');
+            await this.subscribeToMessages();
             await allConfig.forEach(config => {
-              self.logInitialDetails(config);
+              this.logInitialDetails(config);
             });
             if(count === 1){
               clearInterval(timer);
             }
-            await self.placeOrder('B');
+            await this.placeOrder('B');
 
           }).catch(err => {
             console.log(err);
