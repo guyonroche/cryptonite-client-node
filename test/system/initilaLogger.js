@@ -8,16 +8,16 @@ const initialDetails = ({config}) => {
     Bot: {minWidth: 20, maxWidth: 20},
     startTime: {minWidth: 15, maxWidth: 15},
     TradingPair: {minWidth: 11, maxWidth: 11},
-    InitialAssets: {minWidth: 20, maxWidth: 20},
-    InitialCurrency: {minWidth: 20, maxWidth: 20},
+    CurrentAssets: {minWidth: 20, maxWidth: 20},
+    CurrentCapital: {minWidth: 20, maxWidth: 20},
   };
 
   let detailsRow = columnify([{
     Trader: config.name,
     startTime: currentTime,
     TradingPair: config.coinSymbol + ' / ' + config.capitalSymbol,
-    InitialAssets: config.balance.assets + ' ' + config.coinSymbol,
-    InitialCurrency: config.balance.capital + ' ' + config.capitalSymbol
+    AvailableBTC: config.balance.assets + ' ' + config.coinSymbol,
+    AvailableLTC: config.balance.capital + ' ' + config.capitalSymbol
   }], {
     align: 'right',
     columnSplitter: ' | ',
@@ -29,7 +29,7 @@ const initialDetails = ({config}) => {
     showColumnHeaders = false;
   }
 
-  console.log(detailsRow);
+  return console.log(detailsRow);
 };
 
 module.exports = initialDetails;

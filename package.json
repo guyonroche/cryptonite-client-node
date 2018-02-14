@@ -17,6 +17,7 @@
   "author": "Guyon Roche",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.6.0",
     "axios": "^0.17.1",
     "promish": "^5.0.2",
     "ws": "^3.3.3"
