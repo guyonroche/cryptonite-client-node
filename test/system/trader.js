@@ -24,18 +24,21 @@ class Trader {
       this.client.getBalances()
         .then(data => {
           const balanceData = data.balances;
-          config.balance.assets = balanceData.btc.availableBalance;
-          config.balance.capital = balanceData.ltc.availableBalance;
-          config.state.start.assets = balanceData.btc.availableBalance;
-          config.state.start.capital = balanceData.ltc.availableBalance;
+          config.balance.assets = balanceData.ltc.availableBalance;
+          config.balance.capital = balanceData.btc.availableBalance;
+          config.state.start.assets = balanceData.ltc.availableBalance;
+          config.state.start.capital = balanceData.btc.availableBalance;
           return resolve(this.logInitialDetails(config));
         });
     });
   }
 
   logInitialDetails(config) {
-    logInitialDetails({
-      config,
+    return new Promise((resolve) => {
+      logInitialDetails({
+        config,
+      });
+      return resolve(true);
     });
   }
 
@@ -75,7 +78,6 @@ class Trader {
       this.client.cancelMarketOrders(this.market)
         .then(() => {
           console.log('all orders are cancelled for ', this.config.name);
-          process.exit();
           return resolve(true);
         })
         .catch(err => {
@@ -99,54 +101,42 @@ class Trader {
   }
 
   placeOrder(side) {
+
     return new Promise((resolve) => {
       let price;
-      price = side === 'B' ? 0.000005 : 0.00005;
-      const currentAssets = this.getBalance().assets;
-      const currentCapital = this.getBalance().capital;
+      let quantity = 1;
+      let totalCost;
+      price = side === 'B' ? 0.10 : 0.13;
+      const currentAssets = this.getBalance().assets; //ltc
+      const currentCapital = this.getBalance().capital; //btc
+      // buy
       if (side === 'B') {
-        let calcCoins = this.calcMaxCoinsToBuy(price);
-        if (calcCoins.coinsToBuy === 0) {
+        if (currentCapital <= 0.01) {
+          // Not enough minimum capital to purchase from Exchange.
           console.log('Not enough capital to initiate order', this.config.name);
           return resolve(true);
         }
         else {
-          this.updateBalance('ASSETS', currentAssets + calcCoins.coinsToBuy);
-          this.updateBalance('CAPITAL', currentCapital - calcCoins.totalCost);
-          this.getLastBuyPriceAndQuantity(price, calcCoins.coinsToBuy);
-          return resolve(this.createOrder(price, side, calcCoins.coinsToBuy));
+          if (this.config.name === 'trader2') {
+            quantity = this.getQuantity();
+          }
+          totalCost = quantity * price;
+          this.getLastBuyPriceAndQuantity(price, quantity);
+          this.updateBalance('ASSETS', currentAssets + quantity);
+          this.updateBalance('CAPITAL', currentCapital - totalCost);
+          return resolve(this.createOrder(price, side, quantity));
         }
       }
+      // sell
       else {
-        const maxAssetsToUse = currentCapital * (this.config.balance.maxAssetsToUse / 100);
-        if (maxAssetsToUse > 0) {
+        if (currentAssets > 0) {
           if (this.config.name === 'trader2') {
-            let quntities = orderbook.quantities.map(q => {
-              return q;
-            });
-
-            if (quntities.length) {
-
-              const assetsToSell = Math.max(...quntities);
-              if (assetsToSell < currentCapital) {
-                let totalCost = assetsToSell * price;
-                this.updateBalance('ASSETS', currentAssets - assetsToSell);
-                this.updateBalance('CAPITAL', currentCapital + totalCost);
-                resolve(this.createOrder(price, side, assetsToSell / 2));
-              }
-              else {
-                console.log('don\'t have enough assets to sell', this.config.name);
-                resolve(true);
-              }
-            }
+            quantity = this.getQuantity();
           }
-          else {
-            let assetsToSell = maxAssetsToUse;
-            let totalCost = assetsToSell * price;
-            this.updateBalance('ASSETS', currentAssets - assetsToSell);
-            this.updateBalance('CAPITAL', currentCapital + totalCost);
-            resolve(this.createOrder(price, side, assetsToSell));
-          }
+          totalCost = quantity * price;
+          this.updateBalance('ASSETS', currentAssets - quantity);
+          this.updateBalance('CAPITAL', currentCapital + totalCost);
+          resolve(this.createOrder(price, side, quantity));
         }
         else {
           console.log('don\'t have an assets to sell', this.config.name);
@@ -154,6 +144,15 @@ class Trader {
         }
       }
     });
+  }
+
+  getQuantity() {
+    let quntities = orderbook.quantities.map(q => {
+      return q;
+    });
+    if (quntities.length) {
+      return Math.max(...quntities);
+    }
   }
 
   getLastBuyPriceAndQuantity(price, quantity) {
@@ -166,6 +165,7 @@ class Trader {
   }
 
   createOrder(price, side, quantity) {
+
     return new Promise((resolve, reject) => {
       const market = this.market;
       const type = 'L';
@@ -185,36 +185,6 @@ class Trader {
           reject(false);
         });
     });
-  }
-
-  calcMaxCoinsToBuy(price) {
-    const currentCapital = this.getBalance().capital;
-    const maxCapitalToUse = currentCapital * (this.config.balance.maxCapitalToUse / 10000);
-    if (currentCapital <= 0.01) {
-      // Not enough minimum capital to purchase from Exchange.
-      return {
-        coinsToBuy: 0,
-        totalCost: 0
-      };
-    }
-
-    let totalCost;
-    let coinsToBuy = Math.floor(maxCapitalToUse / price);
-
-    let foundCoins = false;
-    while (!foundCoins) {
-      totalCost = (coinsToBuy * price);
-      if (totalCost >= currentCapital) {
-        console.log('Too many coins', coinsToBuy);
-        coinsToBuy--;
-      } else {
-        foundCoins = true;
-      }
-    }
-    return {
-      coinsToBuy,
-      totalCost
-    };
   }
 }
 

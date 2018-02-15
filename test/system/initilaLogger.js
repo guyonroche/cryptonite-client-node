@@ -8,16 +8,16 @@ const initialDetails = ({config}) => {
     Bot: {minWidth: 20, maxWidth: 20},
     startTime: {minWidth: 15, maxWidth: 15},
     TradingPair: {minWidth: 11, maxWidth: 11},
-    CurrentAssets: {minWidth: 20, maxWidth: 20},
     CurrentCapital: {minWidth: 20, maxWidth: 20},
+    CurrentAssets: {minWidth: 20, maxWidth: 20},
   };
 
   let detailsRow = columnify([{
     Trader: config.name,
     startTime: currentTime,
     TradingPair: config.coinSymbol + ' / ' + config.capitalSymbol,
-    AvailableBTC: config.balance.assets + ' ' + config.coinSymbol,
-    AvailableLTC: config.balance.capital + ' ' + config.capitalSymbol
+    CurrentCapital: config.balance.capital + ' ' + config.coinSymbol,
+    CurrentAssets: config.balance.assets + ' ' + config.capitalSymbol
   }], {
     align: 'right',
     columnSplitter: ' | ',

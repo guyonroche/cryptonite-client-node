@@ -43,6 +43,9 @@ function runSequence1(trader1, trader2) {
       },
       cancelAllOrders1 : function(cb) {
         trader1.cancelAllOrders().then(() => cb());
+      },
+      exit : function() {
+        process.exit();
       }
     },
     function(err) {
