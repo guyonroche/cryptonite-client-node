@@ -11,12 +11,11 @@ let traders = {};
 class Trader {
 
   constructor(config) {
-
     this.config = config;
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
     this.client.connect()
-      .then(() => {});
+      .then(() => {console.log('connected');});
   }
 
   init_state(config) {
@@ -26,19 +25,11 @@ class Trader {
           const balanceData = data.balances;
           config.balance.assets = balanceData.ltc.availableBalance;
           config.balance.capital = balanceData.btc.availableBalance;
-          config.state.start.assets = balanceData.ltc.availableBalance;
-          config.state.start.capital = balanceData.btc.availableBalance;
-          return resolve(this.logInitialDetails(config));
+          (logInitialDetails({
+            config,
+          }));
+          resolve(true);
         });
-    });
-  }
-
-  logInitialDetails(config) {
-    return new Promise((resolve) => {
-      logInitialDetails({
-        config,
-      });
-      return resolve(true);
     });
   }
 
@@ -46,11 +37,6 @@ class Trader {
     return {
       assets: this.config.balance.assets,
       capital: this.config.balance.capital,
-      start: {
-        assets: this.config.state.start.assets,
-        capital: this.config.state.start.capital,
-        price: this.config.state.start.price,
-      }
     };
   }
 
@@ -62,27 +48,16 @@ class Trader {
     }
   }
 
-  // execute buy-2/sell-2 orders for trader1
-  runScenario1() {
-    let promises = [];
-    let side;
-    for (let i = 0; i < 4; i++) {
-      side = i <= 1 ? 'B' : 'S';
-      promises.push(this.placeOrder(side));
-    }
-    return Promise.all(promises);
-  }
-
   cancelAllOrders() {
     return new Promise((resolve, reject) => {
       this.client.cancelMarketOrders(this.market)
         .then(() => {
           console.log('all orders are cancelled for ', this.config.name);
-          return resolve(true);
+          resolve(true);
         })
         .catch(err => {
           console.log(err.message);
-          return reject(false);
+          reject(false);
         });
     });
   }
@@ -93,15 +68,13 @@ class Trader {
         this.client.on('message', message => {
           if (message.msg !== 'open-markets') {
             console.log(JSON.stringify(message), this.config.name);
-            resolve(true);
           }
         });
-      return resolve(true);
+      resolve(true);
     });
   }
 
   placeOrder(side) {
-
     return new Promise((resolve) => {
       let price;
       let quantity = 1;
@@ -114,24 +87,25 @@ class Trader {
         if (currentCapital <= 0.01) {
           // Not enough minimum capital to purchase from Exchange.
           console.log('Not enough capital to initiate order', this.config.name);
-          return resolve(true);
+          resolve(true);
         }
         else {
           if (this.config.name === 'trader2') {
-            quantity = this.getQuantity();
+            quantity = this.getQuantity()/2;
+            price = 0.13;
           }
           totalCost = quantity * price;
           this.getLastBuyPriceAndQuantity(price, quantity);
           this.updateBalance('ASSETS', currentAssets + quantity);
           this.updateBalance('CAPITAL', currentCapital - totalCost);
-          return resolve(this.createOrder(price, side, quantity));
+          resolve(this.createOrder(price, side, quantity));
         }
       }
       // sell
       else {
         if (currentAssets > 0) {
           if (this.config.name === 'trader2') {
-            quantity = this.getQuantity();
+            quantity = this.getQuantity()/2;
           }
           totalCost = quantity * price;
           this.updateBalance('ASSETS', currentAssets - quantity);
@@ -140,7 +114,7 @@ class Trader {
         }
         else {
           console.log('don\'t have an assets to sell', this.config.name);
-          return resolve(true);
+          resolve(true);
         }
       }
     });
@@ -159,13 +133,10 @@ class Trader {
     if (this.config.name === 'trader1') {
       orderbook.prices.push(price);
       orderbook.quantities.push(quantity);
-      this.config.state.last.price = price;
-      this.config.state.last.quantity = quantity;
     }
   }
 
   createOrder(price, side, quantity) {
-
     return new Promise((resolve, reject) => {
       const market = this.market;
       const type = 'L';
@@ -178,7 +149,7 @@ class Trader {
       };
       this.client.createOrder(order)
         .then(() => {
-          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Amout is', quantity * price, 'order placed', this.config.name);
+          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Qauntity is', quantity, 'price is' , price, 'order placed', this.config.name);
           resolve(true);
         }).catch(err => {
           console.log(err);

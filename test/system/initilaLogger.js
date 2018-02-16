@@ -29,7 +29,7 @@ const initialDetails = ({config}) => {
     showColumnHeaders = false;
   }
 
-  return console.log(detailsRow);
+  console.log(detailsRow);
 };
 
 module.exports = initialDetails;
