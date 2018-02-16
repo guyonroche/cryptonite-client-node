@@ -20,8 +20,8 @@ createTraders(traders)
 
 function runSequence(trader1, trader2) {
   initTraders(trader1, trader2)
-    .then(()=> scenario1(trader1))
-    .then(()=>scenario2(trader1, trader2))
+    .then(() => scenario1(trader1))
+    .then(() => scenario2(trader1, trader2))
     .catch(error => {
       console.error(error.stack);
     });
