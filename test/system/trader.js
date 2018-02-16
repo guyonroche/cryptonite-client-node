@@ -14,23 +14,23 @@ class Trader {
     this.config = config;
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
-    this.client.connect()
-      .then(() => {console.log('connected');});
   }
 
   init_state(config) {
-    return new Promise((resolve) => {
-      this.client.getBalances()
-        .then(data => {
-          const balanceData = data.balances;
-          config.balance.assets = balanceData.ltc.availableBalance;
-          config.balance.capital = balanceData.btc.availableBalance;
-          (logInitialDetails({
-            config,
-          }));
-          resolve(true);
-        });
-    });
+    return this.client.connect()
+      .then(() => this.getCurrentBalance(config));
+  }
+
+  getCurrentBalance(config) {
+    return this.client.getBalances()
+      .then(data => {
+        const balanceData = data.balances;
+        config.balance.assets = balanceData.ltc.availableBalance;
+        config.balance.capital = balanceData.btc.availableBalance;
+        (logInitialDetails({
+          config,
+        }));
+      });
   }
 
   getBalance() {
@@ -49,17 +49,13 @@ class Trader {
   }
 
   cancelAllOrders() {
-    return new Promise((resolve, reject) => {
-      this.client.cancelMarketOrders(this.market)
-        .then(() => {
-          console.log('all orders are cancelled for ', this.config.name);
-          resolve(true);
-        })
-        .catch(err => {
-          console.log(err.message);
-          reject(false);
-        });
-    });
+    return this.client.cancelMarketOrders(this.market)
+      .then(() => {
+        console.log('all orders are cancelled for ', this.config.name);
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
   }
 
   subscribeToMessages() {
@@ -137,25 +133,21 @@ class Trader {
   }
 
   createOrder(price, side, quantity) {
-    return new Promise((resolve, reject) => {
-      const market = this.market;
-      const type = 'L';
-      const order = {
-        market,
-        side,
-        type,
-        quantity,
-        price,
-      };
-      this.client.createOrder(order)
-        .then(() => {
-          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Qauntity is', quantity, 'price is' , price, 'order placed', this.config.name);
-          resolve(true);
-        }).catch(err => {
-          console.log(err);
-          reject(false);
-        });
-    });
+    const market = this.market;
+    const type = 'L';
+    const order = {
+      market,
+      side,
+      type,
+      quantity,
+      price,
+    };
+    return this.client.createOrder(order)
+      .then(() => {
+        console.log((side === 'B' ? 'Buy' : 'Sell'), 'Qauntity is', quantity, 'price is' , price, 'order placed', this.config.name);
+      }).catch(err => {
+        console.log(err);
+      });
   }
 }
 
