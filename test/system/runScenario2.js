@@ -15,7 +15,6 @@ const runScenario2 = (trader1, trader2) => {
     .then(() => trader1.getCurrentBalance(trader1.config))
     .then(() => trader2.getCurrentBalance(trader2.config))
     .then(() => cleanUp(trader1, trader2))
-    .then(() => process.exit())
     .catch(error => {
       console.error(error.stack);
     });

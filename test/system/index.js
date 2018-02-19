@@ -4,6 +4,7 @@ const traders = config.traders;
 const initTraders = require('./initTraders');
 const scenario1 = require('./runScenario1');
 const scenario2 = require('./runScenario2');
+const scenario3 = require('./runScenario3');
 
 function createTraders(traders) {
   const list = [];
@@ -22,6 +23,7 @@ function runSequence(trader1, trader2) {
   initTraders(trader1, trader2)
     .then(() => scenario1(trader1))
     .then(() => scenario2(trader1, trader2))
+    .then(() => scenario3(trader2))
     .catch(error => {
       console.error(error.stack);
     });

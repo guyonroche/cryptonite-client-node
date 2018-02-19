@@ -3,8 +3,6 @@ const logInitialDetails = require('./initilaLogger');
 
 let orderbook = {};
 
-let traders = {};
-
 class Trader {
 
   constructor(config) {
@@ -58,12 +56,11 @@ class Trader {
 
   subscribeToMessages() {
     return new Promise((resolve) => {
-      traders[this.config.name] =
-        this.client.on('message', message => {
-          if (message.msg !== 'open-markets') {
-            console.log(JSON.stringify(message), this.config.name);
-          }
-        });
+      this.client.on('message', message => {
+        if (message.msg !== 'open-markets') {
+          console.log(JSON.stringify(message), this.config.name);
+        }
+      });
       resolve(true);
     });
   }
@@ -74,19 +71,20 @@ class Trader {
       const currentAssets = this.getBalance().assets; //ltc
       const currentCapital = this.getBalance().capital; //btc
       if(side === 'B') {
-        if (currentCapital <= 0.01) {
+        totalCost = quantity * price;
+        if (currentCapital <= 0.01 || totalCost > currentCapital) {
           console.log('Not enough capital to initiate order', this.config.name);
           resolve(true);
         }
-
-        totalCost = quantity * price;
-        this.getLastBuyPriceAndQuantity(price, quantity, side);
-        this.updateBalance('ASSETS', currentAssets + quantity);
-        this.updateBalance('CAPITAL', currentCapital - totalCost);
-        resolve(this.createOrder(price, side, quantity));
+        else {
+          this.getLastBuyPriceAndQuantity(price, quantity, side);
+          this.updateBalance('ASSETS', currentAssets + quantity);
+          this.updateBalance('CAPITAL', currentCapital - totalCost);
+          resolve(this.createOrder(price, side, quantity));
+        }
       }
       else {
-        if (currentAssets > 0) {
+        if (currentAssets > 0 && quantity < currentAssets) {
           totalCost = quantity * price;
           this.getLastSellPriceAndQuantity(price, quantity, side);
           this.updateBalance('ASSETS', currentAssets - quantity);
@@ -94,7 +92,7 @@ class Trader {
           resolve(this.createOrder(price, side, quantity));
         }
         else {
-          console.log('don\'t have an assets to sell', this.config.name);
+          console.log("don't have an assets to sell", this.config.name);
           resolve(true);
         }
       }
@@ -132,7 +130,7 @@ class Trader {
     };
     return this.client.createOrder(order)
       .then(() => {
-        console.log((side === 'B' ? 'Buy' : 'Sell'), 'Qauntity is', quantity, 'price is' , price, 'order placed', this.config.name);
+        console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
       }).catch(err => {
         console.log(err);
       });
