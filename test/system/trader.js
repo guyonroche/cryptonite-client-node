@@ -1,10 +1,7 @@
 const CryptoniteClient = require('../../lib/cryptonite-client');
 const logInitialDetails = require('./initilaLogger');
 
-let orderbook = {
-  prices: [],
-  quantities: []
-};
+let orderbook = {};
 
 let traders = {};
 
@@ -14,6 +11,7 @@ class Trader {
     this.config = config;
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
+    orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
   }
 
   init_state(config) {
@@ -70,40 +68,27 @@ class Trader {
     });
   }
 
-  placeOrder(side) {
+  placeLimitOrder(side, quantity, price) {
     return new Promise((resolve) => {
-      let price;
-      let quantity = 1;
       let totalCost;
-      price = side === 'B' ? 0.10 : 0.13;
       const currentAssets = this.getBalance().assets; //ltc
       const currentCapital = this.getBalance().capital; //btc
-      // buy
-      if (side === 'B') {
+      if(side === 'B') {
         if (currentCapital <= 0.01) {
-          // Not enough minimum capital to purchase from Exchange.
           console.log('Not enough capital to initiate order', this.config.name);
           resolve(true);
         }
-        else {
-          if (this.config.name === 'trader2') {
-            quantity = this.getQuantity()/2;
-            price = 0.13;
-          }
-          totalCost = quantity * price;
-          this.getLastBuyPriceAndQuantity(price, quantity);
-          this.updateBalance('ASSETS', currentAssets + quantity);
-          this.updateBalance('CAPITAL', currentCapital - totalCost);
-          resolve(this.createOrder(price, side, quantity));
-        }
+
+        totalCost = quantity * price;
+        this.getLastBuyPriceAndQuantity(price, quantity, side);
+        this.updateBalance('ASSETS', currentAssets + quantity);
+        this.updateBalance('CAPITAL', currentCapital - totalCost);
+        resolve(this.createOrder(price, side, quantity));
       }
-      // sell
       else {
         if (currentAssets > 0) {
-          if (this.config.name === 'trader2') {
-            quantity = this.getQuantity()/2;
-          }
           totalCost = quantity * price;
+          this.getLastSellPriceAndQuantity(price, quantity, side);
           this.updateBalance('ASSETS', currentAssets - quantity);
           this.updateBalance('CAPITAL', currentCapital + totalCost);
           resolve(this.createOrder(price, side, quantity));
@@ -116,8 +101,8 @@ class Trader {
     });
   }
 
-  getQuantity() {
-    let quntities = orderbook.quantities.map(q => {
+  getQuantity(config, side) {
+    let quntities = orderbook[config.name][side].quantities.map(q => {
       return q;
     });
     if (quntities.length) {
@@ -125,11 +110,14 @@ class Trader {
     }
   }
 
-  getLastBuyPriceAndQuantity(price, quantity) {
-    if (this.config.name === 'trader1') {
-      orderbook.prices.push(price);
-      orderbook.quantities.push(quantity);
-    }
+  getLastSellPriceAndQuantity(price, quantity, side) {
+    orderbook[this.config.name][side].prices.push(price);
+    orderbook[this.config.name][side].quantities.push(quantity);
+  }
+
+  getLastBuyPriceAndQuantity(price, quantity, side) {
+    orderbook[this.config.name][side].prices.push(price);
+    orderbook[this.config.name][side].quantities.push(quantity);
   }
 
   createOrder(price, side, quantity) {
