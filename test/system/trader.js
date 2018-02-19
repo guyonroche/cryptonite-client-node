@@ -68,53 +68,6 @@ class Trader {
     });
   }
 
-  /*placeOrder(side) {
-    return new Promise((resolve) => {
-      let price;
-      let quantity = 1;
-      let totalCost;
-      price = side === 'B' ? 0.10 : 0.13;
-      const currentAssets = this.getBalance().assets; //ltc
-      const currentCapital = this.getBalance().capital; //btc
-      // buy
-      if (side === 'B') {
-        if (currentCapital <= 0.01) {
-          // Not enough minimum capital to purchase from Exchange.
-          console.log('Not enough capital to initiate order', this.config.name);
-          resolve(true);
-        }
-        else {
-          if (this.config.name === 'trader2') {
-            quantity = this.getQuantity()/2;
-            price = 0.13;
-          }
-          totalCost = quantity * price;
-          this.getLastBuyPriceAndQuantity(price, quantity, side);
-          this.updateBalance('ASSETS', currentAssets + quantity);
-          this.updateBalance('CAPITAL', currentCapital - totalCost);
-          resolve(this.createOrder(price, side, quantity));
-        }
-      }
-      // sell
-      else {
-        if (currentAssets > 0) {
-          if (this.config.name === 'trader2') {
-            quantity = this.getQuantity()/2;
-          }
-          totalCost = quantity * price;
-          this.getLastSellPriceAndQuantity(price, quantity, side);
-          this.updateBalance('ASSETS', currentAssets - quantity);
-          this.updateBalance('CAPITAL', currentCapital + totalCost);
-          resolve(this.createOrder(price, side, quantity));
-        }
-        else {
-          console.log('don\'t have an assets to sell', this.config.name);
-          resolve(true);
-        }
-      }
-    });
-  }*/
-
   placeLimitOrder(side, quantity, price) {
     return new Promise((resolve) => {
       let totalCost;
@@ -122,7 +75,6 @@ class Trader {
       const currentCapital = this.getBalance().capital; //btc
       if(side === 'B') {
         if (currentCapital <= 0.01) {
-          // Not enough minimum capital to purchase from Exchange.
           console.log('Not enough capital to initiate order', this.config.name);
           resolve(true);
         }
@@ -161,7 +113,6 @@ class Trader {
   getLastSellPriceAndQuantity(price, quantity, side) {
     orderbook[this.config.name][side].prices.push(price);
     orderbook[this.config.name][side].quantities.push(quantity);
-
   }
 
   getLastBuyPriceAndQuantity(price, quantity, side) {

@@ -11,7 +11,7 @@ const runScenario2 = (trader1, trader2) => {
     .then(() => systemUpdate(trader1, trader2))
     .then(() => trader1.getCurrentBalance(trader1.config))
     .then(() => trader2.getCurrentBalance(trader2.config))
-    .then(() => { console.log('qqqqqq is', trader1.getQuantity(trader1.config, 'B')/2); trader2.placeLimitOrder('B', trader1.getQuantity(trader1.config, 'B')/2, 0.13); })
+    .then(() => { trader2.placeLimitOrder('B', trader1.getQuantity(trader1.config, 'B')/2, 0.13); })
     .then(() => trader1.getCurrentBalance(trader1.config))
     .then(() => trader2.getCurrentBalance(trader2.config))
     .then(() => cleanUp(trader1, trader2))
