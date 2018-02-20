@@ -23,7 +23,7 @@ class Trader {
         const balanceData = data.balances;
         this.config.balance.assets = balanceData.ltc.availableBalance;
         this.config.balance.capital = balanceData.btc.availableBalance;
-        this.logInitialDetail(this.config)
+        this.logInitialDetail(this.config);
       });
   }
 
