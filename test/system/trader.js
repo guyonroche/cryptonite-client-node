@@ -36,14 +36,6 @@ class Trader {
     };
   }
 
-  updateBalance(type, num) {
-    if (type === 'CAPITAL') {
-      this.config.balance.capital = num;
-    } else if (type === 'ASSETS') {
-      this.config.balance.assets = num;
-    }
-  }
-
   cancelAllOrders() {
     return this.client.cancelMarketOrders(this.market)
       .then(() => {
@@ -67,34 +59,13 @@ class Trader {
 
   placeLimitOrder(side, quantity, price) {
     return new Promise((resolve) => {
-      let totalCost;
-      const currentAssets = this.getBalance().assets; //ltc
-      const currentCapital = this.getBalance().capital; //btc
       if(side === 'B') {
-        totalCost = quantity * price;
-        if (currentCapital <= 0.01 || totalCost > currentCapital) {
-          console.log('Not enough capital to initiate order', this.config.name);
-          resolve(true);
-        }
-        else {
-          this.getLastBuyPriceAndQuantity(price, quantity, side);
-          this.updateBalance('ASSETS', currentAssets + quantity);
-          this.updateBalance('CAPITAL', currentCapital - totalCost);
-          resolve(this.createOrder(price, side, quantity));
-        }
+        this.getLastBuyPriceAndQuantity(price, quantity, side);
+        resolve(this.createOrder(price, side, quantity));
       }
       else {
-        if (currentAssets > 0 && quantity < currentAssets) {
-          totalCost = quantity * price;
-          this.getLastSellPriceAndQuantity(price, quantity, side);
-          this.updateBalance('ASSETS', currentAssets - quantity);
-          this.updateBalance('CAPITAL', currentCapital + totalCost);
-          resolve(this.createOrder(price, side, quantity));
-        }
-        else {
-          console.log("don't have an assets to sell", this.config.name);
-          resolve(true);
-        }
+        this.getLastSellPriceAndQuantity(price, quantity, side);
+        resolve(this.createOrder(price, side, quantity));
       }
     });
   }
@@ -128,12 +99,15 @@ class Trader {
       quantity,
       price,
     };
-    return this.client.createOrder(order)
-      .then(() => {
-        console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
-      }).catch(err => {
-        console.log(err);
-      });
+    return new Promise((resolve, reject) => {
+      this.client.createOrder(order)
+        .then(() => {
+          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
+          resolve(true);
+        }).catch(err => {
+          reject(err);
+        });
+    });
   }
 }
 
