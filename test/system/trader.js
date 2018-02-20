@@ -12,21 +12,25 @@ class Trader {
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
   }
 
-  init_state(config) {
+  init_state() {
     return this.client.connect()
-      .then(() => this.getCurrentBalance(config));
+      .then(() => this.getCurrentBalance());
   }
 
-  getCurrentBalance(config) {
+  getCurrentBalance() {
     return this.client.getBalances()
       .then(data => {
         const balanceData = data.balances;
-        config.balance.assets = balanceData.ltc.availableBalance;
-        config.balance.capital = balanceData.btc.availableBalance;
-        (logInitialDetails({
-          config,
-        }));
+        this.config.balance.assets = balanceData.ltc.availableBalance;
+        this.config.balance.capital = balanceData.btc.availableBalance;
+        this.logInitialDetail(this.config)
       });
+  }
+
+  logInitialDetail(config) {
+    (logInitialDetails({
+      config,
+    }));
   }
 
   getBalance() {
@@ -102,14 +106,15 @@ class Trader {
     return this.client.createOrder(order)
       .then(
         () => {
-          if (options && options.expectFail) {
+          if (options.expectFail) {
             throw new Error('createOrder succeeded when expected to fail');
           }
-          return  console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
+          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
         },
         error => {
-          if (options && options.expectFail) {
-            return console.log('insufficient fund');
+          if (options.expectFail) {
+            console.log('insufficient fund');
+            return;
           }
           throw error;
         }
