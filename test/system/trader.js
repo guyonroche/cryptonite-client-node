@@ -57,15 +57,15 @@ class Trader {
     });
   }
 
-  placeLimitOrder(side, quantity, price) {
+  placeLimitOrder(side, quantity, price,  options = {} ) {
     return new Promise((resolve) => {
       if(side === 'B') {
         this.getLastBuyPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity));
+        resolve(this.createOrder(price, side, quantity, options));
       }
       else {
         this.getLastSellPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity));
+        resolve(this.createOrder(price, side, quantity, options));
       }
     });
   }
@@ -89,7 +89,7 @@ class Trader {
     orderbook[this.config.name][side].quantities.push(quantity);
   }
 
-  createOrder(price, side, quantity) {
+  createOrder(price, side, quantity, options ={}) {
     const market = this.market;
     const type = 'L';
     const order = {
@@ -99,15 +99,21 @@ class Trader {
       quantity,
       price,
     };
-    return new Promise((resolve, reject) => {
-      this.client.createOrder(order)
-        .then(() => {
-          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
-          resolve(true);
-        }).catch(err => {
-          reject(err);
-        });
-    });
+    return this.client.createOrder(order)
+      .then(
+        () => {
+          if (options && options.expectFail) {
+            throw new Error('createOrder succeeded when expected to fail');
+          }
+          return  console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
+        },
+        error => {
+          if (options && options.expectFail) {
+            return console.log('insufficient fund');
+          }
+          throw error;
+        }
+      );
   }
 }
 
