@@ -9,13 +9,12 @@ const runScenario2 = (trader1, trader2) => {
     .then(() => trader1.placeLimitOrder('S', 0.5, 0.13))
     .then(() => { trader2.placeLimitOrder('S', trader1.getQuantity(trader1.config, 'B')/2 , 0.13); })
     .then(() => systemUpdate(trader1, trader2))
-    .then(() => trader1.getCurrentBalance(trader1.config))
-    .then(() => trader2.getCurrentBalance(trader2.config))
+    .then(() => trader1.getCurrentBalance())
+    .then(() => trader2.getCurrentBalance())
     .then(() => { trader2.placeLimitOrder('B', trader1.getQuantity(trader1.config, 'B')/2, 0.13); })
-    .then(() => trader1.getCurrentBalance(trader1.config))
-    .then(() => trader2.getCurrentBalance(trader2.config))
+    .then(() => trader1.getCurrentBalance())
+    .then(() => trader2.getCurrentBalance())
     .then(() => cleanUp(trader1, trader2))
-    .then(() => process.exit())
     .catch(error => {
       console.error(error.stack);
     });

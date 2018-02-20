@@ -5,7 +5,7 @@ const runScenario1 = (trader1) => {
     .then(() => trader1.placeLimitOrder('S', 1, 0.13))
     .then(() => trader1.placeLimitOrder('S', 1, 0.13))
     .then(() => trader1.cancelAllOrders())
-    .then(() => trader1.getCurrentBalance(trader1.config))
+    .then(() => trader1.getCurrentBalance())
     .catch(error => {
       console.error(error.stack);
     });
