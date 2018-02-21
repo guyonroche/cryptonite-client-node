@@ -27,7 +27,7 @@ const Commander = (arg) => {
       if (allowedConfig.includes(config)) {
         console.log('selected config is', config);
         arg.value = config;
-        arg.option = 'Config';
+        arg.option = 'config';
       } else {
         console.log('Config ', config, ' is not allowed.  Allowed values are :', allowedConfig.toString());
         process.exit(1);
