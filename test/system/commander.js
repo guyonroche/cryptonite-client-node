@@ -4,37 +4,30 @@ let allowedScenarios = ['TestSingleTrader', 'TestTwoTrader', 'TestBalances'];
 
 const Commander = (arg) => {
   program
-    .command('scenario <scenarioName>')
-    .alias('s')
-    .description('Choose Scenario To execute')
-    .action((name) => {
-      if (allowedScenarios.includes(name)) {
-        console.log('selected scenario is', name);
-        arg.value = name;
-        arg.option = 'scenario';
-      } else {
-        console.log('Scenario ', name, ' is not allowed. Allowed values are :', allowedScenarios.join());
-        process.exit(1);
-      }
-    });
+    .version('0.1.0')
+    .option('-s, --scenario <scenarioName>', 'choose scenario')
+    .option('-c, --config <config>')
+    .parse(process.argv);
 
-  program
-    .command('config <config>')
-    .alias('c')
-    .description('Choose config')
-    .action((config) => {
-      if (fs.existsSync(config)) {
-        console.log('selected config is', config);
-        arg.value = config;
-        arg.option = 'config';
-      } else {
-        console.log(config ,'file does not exits');
-        process.exit(1);
-      }
-    });
+  if(program.scenario){
+    if (allowedScenarios.includes(program.scenario)) {
+      console.log('selected scenario is', program.scenario);
+      arg.scenario = program.scenario;
+    } else {
+      console.log('Scenario ', program.scenario, ' is not allowed. Allowed values are :', allowedScenarios.join());
+      process.exit(1);
+    }
+  }
 
-  program.parse(process.argv);
-
+  if(program.config) {
+    if (fs.existsSync(program.config)) {
+      console.log('selected config is', program.config);
+      arg.config = program.config;
+    } else {
+      console.log(program.config ,'file does not exits');
+      process.exit(1);
+    }
+  }
 };
 
 module.exports = {

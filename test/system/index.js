@@ -14,12 +14,12 @@ const ScenarioList = {
   TestBalances : TestBalances
 };
 
-let arg = {};
+let arg = [];
 
 function init() {
   Commander.init(arg);
-  if(arg.option === 'config') {
-    config = JSON.parse(fs.readFileSync(arg.value).toString());
+  if(arg.config) {
+    config = JSON.parse(fs.readFileSync(arg.config).toString());
   }
   const traders = config.traders;
   createTraders(traders)
@@ -37,10 +37,9 @@ function createTraders(traders) {
 }
 
 function runSequence(trader1, trader2) {
-  
-  if(arg.option === 'scenario') {
+  if(arg.scenario) {
     initTraders(trader1, trader2)
-      .then(() => ScenarioList[arg.value](trader1, trader2))
+      .then(() => ScenarioList[arg.scenario](trader1, trader2))
       .then(() => process.exit())
       .catch(error => {
         console.error(error.stack);
