@@ -1,7 +1,7 @@
-const systemUpdate = require('./systemUpdates');
-const cleanUp = require('./systemCleanUp');
+const systemUpdate = require('../systemUpdates');
+const cleanUp = require('../systemCleanUp');
 
-const runScenario2 = (trader1, trader2) => {
+const TestTwoTrader = (trader1, trader2) => {
   console.log('******************** Scenario 2 is started *********************');
   return trader1.placeLimitOrder('B', 1, 0.10)
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
@@ -19,4 +19,4 @@ const runScenario2 = (trader1, trader2) => {
       console.error(error.stack);
     });
 };
-module.exports = runScenario2;
+module.exports = TestTwoTrader;
