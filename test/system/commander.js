@@ -6,7 +6,7 @@ const Commander = (arg) => {
   program
     .version('0.1.0')
     .option('-s, --scenario <scenarioName>', 'choose scenario')
-    .option('-c, --config <config>')
+    .option('-c, --config <config>', 'choose config file', './configs/config.json')
     .parse(process.argv);
 
   if(program.scenario){

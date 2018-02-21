@@ -4,9 +4,7 @@ const initTraders = require('./initTraders');
 const TestSingleTrader = require('./scenarios/testSingleTrade');
 const TestTwoTrader = require('./scenarios/testTwoTrader');
 const TestBalances = require('./scenarios/testBalances');
-const DevConfig = require('./configs/config.json');
 const fs = require('fs');
-let config = DevConfig;
 
 const ScenarioList = {
   TestSingleTrader : TestSingleTrader,
@@ -18,9 +16,8 @@ let arg = [];
 
 function init() {
   Commander.init(arg);
-  if(arg.config) {
-    config = JSON.parse(fs.readFileSync(arg.config).toString());
-  }
+  const config = JSON.parse(fs.readFileSync(arg.config).toString());
+
   const traders = config.traders;
   createTraders(traders)
     .then((traders) => {
