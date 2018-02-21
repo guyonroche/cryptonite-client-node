@@ -1,11 +1,11 @@
 const trader = require('./trader');
-const Commander = require('./commander/index');
+const Commander = require('./commander');
 const initTraders = require('./initTraders');
-const TestSingleTrader = require('./testSingleTrade');
-const TestTwoTrader = require('./testTwoTrader');
-const TestBalances = require('./testBalances');
+const TestSingleTrader = require('./scenarios/testSingleTrade');
+const TestTwoTrader = require('./scenarios/testTwoTrader');
+const TestBalances = require('./scenarios/testBalances');
 const DevConfig = require('./configs/config.json');
-const ProdConfig = require('./configs/config-prod.json');
+const fs = require('fs');
 let config = DevConfig;
 
 const ScenarioList = {
@@ -19,7 +19,7 @@ let arg = {};
 function init() {
   Commander.init(arg);
   if(arg.option === 'config') {
-    config = arg.value === 'DevConfig' ? DevConfig : ProdConfig;
+    config = JSON.parse(fs.readFileSync(arg.value).toString());
   }
   const traders = config.traders;
   createTraders(traders)

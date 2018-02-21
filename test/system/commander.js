@@ -1,6 +1,5 @@
 const program = require('commander');
-
-let allowedConfig = ['ProdConfig', 'DevConfig'];
+const fs = require('fs');
 let allowedScenarios = ['TestSingleTrader', 'TestTwoTrader', 'TestBalances'];
 
 const Commander = (arg) => {
@@ -14,7 +13,7 @@ const Commander = (arg) => {
         arg.value = name;
         arg.option = 'scenario';
       } else {
-        console.log('Scenario ', name, ' is not allowed. Allowed values are :', allowedScenarios.toString());
+        console.log('Scenario ', name, ' is not allowed. Allowed values are :', allowedScenarios.join());
         process.exit(1);
       }
     });
@@ -24,12 +23,12 @@ const Commander = (arg) => {
     .alias('c')
     .description('Choose config')
     .action((config) => {
-      if (allowedConfig.includes(config)) {
+      if (fs.existsSync(config)) {
         console.log('selected config is', config);
         arg.value = config;
         arg.option = 'config';
       } else {
-        console.log('Config ', config, ' is not allowed.  Allowed values are :', allowedConfig.toString());
+        console.log(config ,'file does not exits');
         process.exit(1);
       }
     });

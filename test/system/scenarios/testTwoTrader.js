@@ -1,5 +1,5 @@
-const systemUpdate = require('./systemUpdates');
-const cleanUp = require('./systemCleanUp');
+const systemUpdate = require('../systemUpdates');
+const cleanUp = require('../systemCleanUp');
 
 const TestTwoTrader = (trader1, trader2) => {
   console.log('******************** Scenario 2 is started *********************');
