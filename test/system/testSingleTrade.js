@@ -1,4 +1,4 @@
-const runScenario1 = (trader1) => {
+const TestSingleTrader = (trader1) => {
   console.log('******************** Scenario 1 is started *********************');
   return trader1.placeLimitOrder('B', 2, 0.10)
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
@@ -10,4 +10,4 @@ const runScenario1 = (trader1) => {
       console.error(error.stack);
     });
 };
-module.exports = runScenario1;
+module.exports = TestSingleTrader;
