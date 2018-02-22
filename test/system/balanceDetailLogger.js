@@ -1,8 +1,7 @@
 const columnify = require('columnify');
 let showColumnHeaders = true;
 const balanceDetailsLogger = ({config}) => {
-
-  console.log('********************** Test result for', config.name, '**************************');
+  let text = `********************** Test result for ${config.name} **************************\n`;
   const row = columnify([{
     info: 'Assets:',
     available: Number(config.balance.available.assets).toFixed(2) + ` ${config.coinSymbol}`,
@@ -16,8 +15,11 @@ const balanceDetailsLogger = ({config}) => {
   if (showColumnHeaders) {
     showColumnHeaders = false;
   }
-  console.log(row);
 
+  text += `${row}\n`;
+
+  // gather all text together then output atomically.
+  console.log(text);
 };
 
 module.exports = balanceDetailsLogger;
