@@ -44,12 +44,12 @@ class Trader {
   }
 
   showBalanceDetail(config) {
-    return new Promise((resolve) => {
-      (balanceDetails({
-        config,
-      }));
-      resolve(true);
-    });
+    return this.getCurrentBalance()
+      .then(() => {
+        (balanceDetails({
+          config,
+        }));
+      });
   }
 
   cancelAllOrders() {

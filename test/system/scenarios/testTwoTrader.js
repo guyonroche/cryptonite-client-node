@@ -16,7 +16,8 @@ const TestTwoTrader = (trader1, trader2) => {
     .then(() => { trader2.placeLimitOrder('B', trader1.getQuantity(trader1.config, 'B')/2, 0.13); })
     .then(() => trader1.getCurrentBalance())
     .then(() => trader2.getCurrentBalance())
-    .then(() => cleanUp(trader1, trader2))
+    .then(() => trader1.cancelAllOrders())
+    .then(() => trader2.cancelAllOrders())
     .catch(error => {
       console.error(error.stack);
     });
