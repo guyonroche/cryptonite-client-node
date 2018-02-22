@@ -7,7 +7,7 @@ const TestTwoTrader = require('./scenarios/testTwoTrader');
 const TestBalances = require('./scenarios/testBalances');
 const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
-const initTraders = require('./initTraders');
+// const initTraders = require('./initTraders');
 
 const ScenarioList = {
   TestSingleTrader,
