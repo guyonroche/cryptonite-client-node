@@ -16,8 +16,8 @@ const initialDetails = ({config}) => {
     Trader: config.name,
     startTime: currentTime,
     TradingPair: config.coinSymbol + ' / ' + config.capitalSymbol,
-    CurrentCapital: config.balance.capital + ' ' + config.coinSymbol,
-    CurrentAssets: config.balance.assets + ' ' + config.capitalSymbol
+    CurrentCapital: config.balance.available.capital + ' ' + config.coinSymbol,
+    CurrentAssets: config.balance.available.assets + ' ' + config.capitalSymbol
   }], {
     align: 'right',
     columnSplitter: ' | ',

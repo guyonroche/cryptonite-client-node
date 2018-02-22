@@ -1,5 +1,6 @@
 const CryptoniteClient = require('../../lib/cryptonite-client');
 const logInitialDetails = require('./initilaLogger');
+const balanceDetails = require('./balanceDetailLogger');
 
 let orderbook = {};
 
@@ -21,8 +22,10 @@ class Trader {
     return this.client.getBalances()
       .then(data => {
         const balanceData = data.balances;
-        this.config.balance.assets = balanceData.ltc.availableBalance;
-        this.config.balance.capital = balanceData.btc.availableBalance;
+        this.config.balance.available.assets = balanceData.ltc.availableBalance;
+        this.config.balance.available.capital = balanceData.btc.availableBalance;
+        this.config.balance.current.assets = balanceData.ltc.availableBalance;
+        this.config.balance.current.capital = balanceData.btc.availableBalance;
         this.logInitialDetail(this.config);
       });
   }
@@ -35,9 +38,18 @@ class Trader {
 
   getBalance() {
     return {
-      assets: this.config.balance.assets,
-      capital: this.config.balance.capital,
+      assets: this.config.balance.available.assets,
+      capital: this.config.balance.available.capital,
     };
+  }
+
+  showBalanceDetail(config) {
+    return this.getCurrentBalance()
+      .then(() => {
+        (balanceDetails({
+          config,
+        }));
+      });
   }
 
   cancelAllOrders() {

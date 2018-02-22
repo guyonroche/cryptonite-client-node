@@ -1,9 +1,10 @@
 const systemUpdate = require('../systemUpdates');
-const cleanUp = require('../systemCleanUp');
+const initTraders = require('../initTraders');
 
 const TestTwoTrader = (trader1, trader2) => {
   console.log('******************** Scenario 2 is started *********************');
-  return trader1.placeLimitOrder('B', 1, 0.10)
+  return initTraders(trader1, trader2)
+    .then(() => trader1.placeLimitOrder('B', 1, 0.10))
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
     .then(() => trader1.placeLimitOrder('S', 0.5, 0.13))
     .then(() => trader1.placeLimitOrder('S', 0.5, 0.13))
@@ -14,7 +15,8 @@ const TestTwoTrader = (trader1, trader2) => {
     .then(() => { trader2.placeLimitOrder('B', trader1.getQuantity(trader1.config, 'B')/2, 0.13); })
     .then(() => trader1.getCurrentBalance())
     .then(() => trader2.getCurrentBalance())
-    .then(() => cleanUp(trader1, trader2))
+    .then(() => trader1.cancelAllOrders())
+    .then(() => trader2.cancelAllOrders())
     .catch(error => {
       console.error(error.stack);
     });
