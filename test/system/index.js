@@ -1,9 +1,11 @@
 const trader = require('./trader');
 const Commander = require('./commander');
-const initTraders = require('./initTraders');
 const TestSingleTrader = require('./scenarios/testSingleTrade');
 const TestTwoTrader = require('./scenarios/testTwoTrader');
 const TestBalances = require('./scenarios/testBalances');
+const systemCleanup = require('./systemCleanUp');
+const result = require('./systemTestResult');
+const initTraders = require('./initTraders');
 const fs = require('fs');
 
 const ScenarioList = {
@@ -16,7 +18,8 @@ let arg = [];
 
 function init() {
   Commander.init(arg);
-  const config = JSON.parse(fs.readFileSync(arg.config).toString());
+  //const config = JSON.parse(fs.readFileSync(arg.config).toString());
+  const config = require('./configs/config.json');
 
   const traders = config.traders;
   createTraders(traders)
@@ -35,18 +38,21 @@ function createTraders(traders) {
 
 function runSequence(trader1, trader2) {
   if(arg.scenario) {
-    initTraders(trader1, trader2)
+    systemCleanup(trader1, trader2)
       .then(() => ScenarioList[arg.scenario](trader1, trader2))
+      .then(() => result(trader1, trader2))
       .then(() => process.exit())
       .catch(error => {
         console.error(error.stack);
       });
   }
   else {
-    initTraders(trader1, trader2)
+    systemCleanup(trader1, trader2)
       .then(() => TestSingleTrader(trader1))
       .then(() => TestTwoTrader(trader1, trader2))
       .then(() => TestBalances(trader1, trader2))
+      .then(() => result(trader1, trader2))
+      .then(() => process.exit())
       .catch(error => {
         console.error(error.stack);
       });

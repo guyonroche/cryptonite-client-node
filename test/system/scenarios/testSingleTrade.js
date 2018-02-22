@@ -1,6 +1,7 @@
 const TestSingleTrader = (trader1) => {
   console.log('******************** Scenario 1 is started *********************');
-  return trader1.placeLimitOrder('B', 2, 0.10)
+  return trader1.init_state(trader1.config)
+    .then(() => trader1.placeLimitOrder('B', 2, 0.10))
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
     .then(() => trader1.placeLimitOrder('S', 1, 0.13))
     .then(() => trader1.placeLimitOrder('S', 1, 0.13))
