@@ -1,5 +1,4 @@
 const systemUpdate = require('../systemUpdates');
-const cleanUp = require('../systemCleanUp');
 const initTraders = require('../initTraders');
 
 const TestTwoTrader = (trader1, trader2) => {
