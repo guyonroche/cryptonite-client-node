@@ -12,8 +12,14 @@
       "coinSymbol": "BTC" ,
       "capitalSymbol": "LTC" ,
       "balance": {
-        "assets": 0 ,
-        "capital": 1
+        "available" : {
+          "assets": 0 ,
+          "capital": 1
+        },
+        "current" : {
+          "assets": 0 ,
+          "capital": 1
+        }
       }
     } ,
     {
@@ -28,8 +34,14 @@
       "coinSymbol": "BTC" ,
       "capitalSymbol": "LTC" ,
       "balance": {
-        "assets": 0 ,
-        "capital": 1
+        "available" : {
+          "assets": 0 ,
+          "capital": 1
+        },
+        "current" : {
+          "assets": 0 ,
+          "capital": 1
+        }
       }
     }
   ]

@@ -18,8 +18,7 @@ let arg = [];
 
 function init() {
   Commander.init(arg);
-  //const config = JSON.parse(fs.readFileSync(arg.config).toString());
-  const config = require('./configs/config.json');
+  const config = JSON.parse(fs.readFileSync(arg.config).toString());
 
   const traders = config.traders;
   createTraders(traders)
