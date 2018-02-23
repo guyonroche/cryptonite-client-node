@@ -50,7 +50,7 @@ function runSequence(traders) {
   Promish.resolve()
     .then(() => systemCleanup(traders))
     .then(() => runScenarios(traders))
-    .delay(3000) // to give cancel-order side effects to complete
+    .delay(1000) // to give cancel-order side effects to complete
     .then(() => result(traders))
     .then(() => process.exit())
     .catch(error => {

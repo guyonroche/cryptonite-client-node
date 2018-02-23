@@ -13,7 +13,7 @@ const isStopOrder = (type) => type[0] === 'S';
 commander
   .version(packageConfig.version)
   .arguments('<market> <side> <type> <quantity|value> [price]')
-  .option('-i, --customer-id <id>', 'Customer supplied id', null)
+  .option('-x, --ext-id <id>', 'Customer supplied external id', null)
   .option('-s, --stop <value>', 'Stop value', parseFloat)
   .option('-c, --config <filename>', 'Config file', './config.json')
   .action((market, side, type, quantity, price, options) => {
@@ -22,8 +22,8 @@ commander
       side,
       type,
     };
-    if (options.customerId) {
-      order.customerId = options.customerId;
+    if (options.extId) {
+      order.extId = options.extId;
     }
     if (isMarketOrder(type)) {
       if (isBuySide(side)) {
