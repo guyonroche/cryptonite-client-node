@@ -1,7 +1,7 @@
 const commander = require('commander');
 const CryptoniteClient = require('../../lib/cryptonite-client');
 const config = require('./config.json');
-const package = require('../../package');
+const packageConfig = require('../../package');
 
 isBuySide = (side) => side === 'B';
 isSellSide = (side) => side === 'S';
@@ -11,7 +11,7 @@ const isLimitOrder = (type) => ['L', 'SL', 'SLT'].includes(type);
 const isStopOrder = (type) => type[0] === 'S';
 
 commander
-  .version(package.version)
+  .version(packageConfig.version)
   .arguments('<market> <side> <type> <quantity|value> [price]')
   .option('-i, --customer-id <id>', 'Customer supplied id', null)
   .option('-s, --stop <value>', 'Stop value', parseFloat)
