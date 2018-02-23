@@ -3,11 +3,11 @@ const CryptoniteClient = require('../../lib/cryptonite-client');
 const config = require('./config.json');
 const packageConfig = require('../../package');
 
-isBuySide = (side) => side === 'B';
-isSellSide = (side) => side === 'S';
+const isBuySide = (side) => side === 'B';
+// const isSellSide = (side) => side === 'S';
 
 const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
-const isLimitOrder = (type) => ['L', 'SL', 'SLT'].includes(type);
+// const isLimitOrder = (type) => ['L', 'SL', 'SLT'].includes(type);
 const isStopOrder = (type) => type[0] === 'S';
 
 commander
