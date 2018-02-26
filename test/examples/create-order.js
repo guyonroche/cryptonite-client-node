@@ -1,6 +1,6 @@
+const fs = require('fs');
 const commander = require('commander');
 const CryptoniteClient = require('../../lib/cryptonite-client');
-const config = require('./config.json');
 const packageConfig = require('../../package');
 
 const isBuySide = (side) => side === 'B';
@@ -44,6 +44,7 @@ commander
     }
     console.log('order', JSON.stringify(order));
 
+    const config = JSON.parse(fs.readFileSync(options.config));
     const client = new CryptoniteClient(config);
 
     client.createOrder(order)
