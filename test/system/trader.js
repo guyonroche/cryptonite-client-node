@@ -2,6 +2,9 @@ const CryptoniteClient = require('../../lib/cryptonite-client');
 const logInitialDetails = require('./initilaLogger');
 const balanceDetails = require('./balanceDetailLogger');
 
+const isBuySide = (side) => side === 'B';
+const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
+
 let orderbook = {};
 
 class Trader {
@@ -74,26 +77,58 @@ class Trader {
   }
 
   placeLimitOrder(side, quantity, price,  options = {} ) {
-    return new Promise((resolve) => {
-      if(side === 'B') {
-        this.getLastBuyPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, 'L', options));
-      }
-      else {
-        this.getLastSellPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, 'L', options));
-      }
-    });
+    this.getLastPriceAndQuantity(price, quantity, side);
+    return this.createOrder({
+      price,
+      side,
+      quantity,
+      type: 'L',
+    }, options);
+  }
+
+  placeMarketOrder(side, quantity, options) {
+    if (isBuySide(side)) {
+      return this.createOrder({
+        side,
+        value: quantity,
+        type: 'M',
+      }, options);
+    } else {
+      return this.createOrder({
+        side,
+        quantity,
+        type: 'M',
+      }, options);
+    }
+  }
+
+  placeStopOrder(side, quantity, stop, options) {
+    if (isBuySide(side)) {
+      return this.createOrder({
+        side,
+        value: quantity,
+        type: 'S',
+        stop,
+      }, options);
+    } else {
+      return this.createOrder({
+        side,
+        quantity,
+        type: 'S',
+        stop,
+      }, options);
+    }
+
   }
 
   placeLimitOrderSpread(price, quantity, count, margin) {
     const promises = [];
     for (let i = 1; i <= count; i++) {
       promises.push(
-        this.createOrder(price + (i * margin), 'S', quantity, 'L')
+        this.createOrder({ price: price + (i * margin), side: 'S', quantity, type: 'L'})
       );
       promises.push(
-        this.createOrder(price - (i * margin), 'B', quantity, 'L')
+        this.createOrder({ price: price - (i * margin), side: 'B', quantity, type: 'L'})
       );
     }
     return Promise.all(promises);
@@ -108,42 +143,13 @@ class Trader {
     }
   }
 
-  getLastSellPriceAndQuantity(price, quantity, side) {
+  getLastPriceAndQuantity(price, quantity, side) {
     orderbook[this.config.name][side].prices.push(price);
     orderbook[this.config.name][side].quantities.push(quantity);
   }
 
-  getLastBuyPriceAndQuantity(price, quantity, side) {
-    orderbook[this.config.name][side].prices.push(price);
-    orderbook[this.config.name][side].quantities.push(quantity);
-  }
-
-  createOrder(price, side, quantity, type, stop = 0, options ={}) {
-    const market = this.market;
-    const order = {
-      market,
-      side,
-      type,
-      price,
-    };
-
-    const isBuySide = (side) => side === 'B';
-    const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
-    const isStopOrder = (type) => type[0] === 'S';
-
-    if (isMarketOrder(type)) {
-      if (isBuySide(side)) {
-        order.value = quantity;
-      } else {
-        order.quantity = quantity;
-      }
-    } else {
-      order.quantity = quantity;
-      order.price = price;
-    }
-    if (isStopOrder(type)) {
-      order.stop = stop;
-    }
+  createOrder(order, options ={}) {
+    order.market = this.market;
 
     return this.client.createOrder(order)
       .then(
@@ -151,7 +157,7 @@ class Trader {
           if (options.expectFail) {
             throw new Error('createOrder succeeded when expected to fail');
           }
-          console.log((side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', quantity, 'price is' , price, 'order placed', this.config.name);
+          console.log((order.side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', order.quantity, 'price is' , order.price, 'order placed', this.config.name);
         },
         error => {
           if (options.expectFail) {
