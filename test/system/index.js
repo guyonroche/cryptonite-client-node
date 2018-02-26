@@ -2,17 +2,20 @@ const fs = require('fs');
 const Promish = require('promish');
 const Trader = require('./trader');
 const Commander = require('./commander');
-const TestSingleTrader = require('./scenarios/testSingleTrade');
-const TestTwoTrader = require('./scenarios/testTwoTrader');
-const TestBalances = require('./scenarios/testBalances');
 const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
 
-const ScenarioList = {
-  TestSingleTrader,
-  TestTwoTrader,
-  TestBalances,
-};
+const ScenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
+  .filter(filename => /\.js$/.test(filename))
+  .map(filename => ({
+    scenario: require(`${__dirname}/scenarios/${filename}`),
+    name: filename.substr(0, filename.length - 3),
+  }))
+  .sort((a,b) => a.scenario.index - b.scenario.index)
+  .reduce((o, t) => {
+    o[t.name] = t.scenario.run;
+    return o;
+  }, {});
 
 let arg = [];
 

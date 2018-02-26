@@ -1,5 +1,7 @@
-const TestBalances = (trader1, trader2) => {
-  console.log('********************* Scenario 3 :  Test balance checks *********************');
+const run = (trader1, trader2) => {
+  console.log('****************************************************************');
+  console.log('** Scenario 3: Test Available Balance                         **');
+  console.log('****************************************************************');
   return trader2.init_state(trader2.config)
     .then(() => trader2.placeLimitOrder('S', trader2.getBalance().assets + 25, 0.14, { expectFail: true }))
     .then(() => trader2.placeLimitOrder('S', ((trader2.getBalance().assets/2)), 0.14))
@@ -15,4 +17,7 @@ const TestBalances = (trader1, trader2) => {
       console.error(error.stack);
     });
 };
-module.exports = TestBalances;
+module.exports = {
+  index: 3,
+  run,
+};

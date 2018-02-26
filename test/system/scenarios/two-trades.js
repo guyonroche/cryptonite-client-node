@@ -1,8 +1,10 @@
 const systemUpdate = require('../systemUpdates');
 const initTraders = require('../initTraders');
 
-const TestTwoTrader = (trader1, trader2) => {
-  console.log('******************** Scenario 2 is started *********************');
+const run = (trader1, trader2) => {
+  console.log('****************************************************************');
+  console.log('** Scenario 2: Two Trades                                     **');
+  console.log('****************************************************************');
   return initTraders(trader1, trader2)
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
     .then(() => trader1.placeLimitOrder('B', 1, 0.10))
@@ -21,4 +23,8 @@ const TestTwoTrader = (trader1, trader2) => {
       console.error(error.stack);
     });
 };
-module.exports = TestTwoTrader;
+
+module.exports = {
+  index: 2,
+  run,
+};
