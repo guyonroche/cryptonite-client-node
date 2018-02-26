@@ -43,6 +43,28 @@
           "capital": 1
         }
       }
+    },
+    {
+      "name": "trader name" ,
+      "protocol": "https:" ,
+      "hostname": "server-host goes here" ,
+      "apiKey": "api-key goes here" ,
+      "apiSecret": "api-secret goes here" ,
+      "options": {
+        "rejectUnauthorized": false
+      } ,
+      "coinSymbol": "BTC" ,
+      "capitalSymbol": "LTC" ,
+      "balance": {
+        "available" : {
+          "assets": 0 ,
+          "capital": 1
+        },
+        "current" : {
+          "assets": 0 ,
+          "capital": 1
+        }
+      }
     }
   ]
 }

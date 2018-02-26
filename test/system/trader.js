@@ -77,11 +77,28 @@ class Trader {
     return new Promise((resolve) => {
       if(side === 'B') {
         this.getLastBuyPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, options));
+        resolve(this.createOrder(price, side, quantity, 'L', options));
       }
       else {
         this.getLastSellPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, options));
+        resolve(this.createOrder(price, side, quantity, 'L', options));
+      }
+    });
+  }
+
+  placeLimitOrderSpread(side, price, quantity, count, margin) {
+    return new Promise((resolve) => {
+      for (let i=1; i<=count; i++) {
+        if(side === 'B') {
+          this.getLastBuyPriceAndQuantity(price, quantity, side);
+          price = price - margin;
+          resolve(this.createOrder(price, side, quantity, 'L'));
+        }
+        else {
+          this.getLastSellPriceAndQuantity(price, quantity, side);
+          price = price + margin;
+          resolve(this.createOrder(price, side, quantity, 'L'));
+        }
       }
     });
   }
@@ -95,6 +112,24 @@ class Trader {
     }
   }
 
+  getMaxBuyPrice(config, side) {
+    let prices = orderbook[config.name][side].prices.map(p => {
+      return p;
+    });
+    if(prices.length) {
+      return Math.max(...prices);
+    }
+  }
+
+  getLowestSellPrice(config, side) {
+    let prices = orderbook[config.name][side].prices.map(p => {
+      return p;
+    });
+    if(prices.length) {
+      return Math.min(...prices);
+    }
+  }
+
   getLastSellPriceAndQuantity(price, quantity, side) {
     orderbook[this.config.name][side].prices.push(price);
     orderbook[this.config.name][side].quantities.push(quantity);
@@ -105,16 +140,33 @@ class Trader {
     orderbook[this.config.name][side].quantities.push(quantity);
   }
 
-  createOrder(price, side, quantity, options ={}) {
+  createOrder(price, side, quantity, type, options ={}) {
     const market = this.market;
-    const type = 'L';
     const order = {
       market,
       side,
       type,
-      quantity,
       price,
     };
+
+    const isBuySide = (side) => side === 'B';
+    const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
+    const isStopOrder = (type) => type[0] === 'S';
+
+    if (isMarketOrder(type)) {
+      if (isBuySide(side)) {
+        order.value = quantity;
+      } else {
+        order.quantity = quantity;
+      }
+    } else {
+      order.quantity = quantity;
+      order.price = price;
+    }
+    if (isStopOrder(type)) {
+      order.stop = 0.25;
+    }
+
     return this.client.createOrder(order)
       .then(
         () => {
@@ -131,6 +183,13 @@ class Trader {
           throw error;
         }
       );
+  }
+
+  getMyOrders() {
+    return this.client.getMyOrders(1, 10)
+      .then(data => {
+        console.log('my orders ', data, this.config.name);
+      });
   }
 }
 
