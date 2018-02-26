@@ -86,21 +86,17 @@ class Trader {
     });
   }
 
-  placeLimitOrderSpread(side, price, quantity, count, margin) {
-    return new Promise((resolve) => {
-      for (let i=1; i<=count; i++) {
-        if(side === 'B') {
-          this.getLastBuyPriceAndQuantity(price, quantity, side);
-          price = price - margin;
-          resolve(this.createOrder(price, side, quantity, 'L'));
-        }
-        else {
-          this.getLastSellPriceAndQuantity(price, quantity, side);
-          price = price + margin;
-          resolve(this.createOrder(price, side, quantity, 'L'));
-        }
-      }
-    });
+  placeLimitOrderSpread(price, quantity, count, margin) {
+    const promises = [];
+    for (let i = 1; i <= count; i++) {
+      promises.push(
+        this.createOrder(price + (i * margin), 'S', quantity, 'L')
+      );
+      promises.push(
+        this.createOrder(price - (i * margin), 'B', quantity, 'L')
+      );
+    }
+    return Promise.all(promises);
   }
 
   getQuantity(config, side) {
@@ -109,24 +105,6 @@ class Trader {
     });
     if (quntities.length) {
       return Math.max(...quntities);
-    }
-  }
-
-  getMaxBuyPrice(config, side) {
-    let prices = orderbook[config.name][side].prices.map(p => {
-      return p;
-    });
-    if(prices.length) {
-      return Math.max(...prices);
-    }
-  }
-
-  getLowestSellPrice(config, side) {
-    let prices = orderbook[config.name][side].prices.map(p => {
-      return p;
-    });
-    if(prices.length) {
-      return Math.min(...prices);
     }
   }
 
