@@ -7,11 +7,13 @@ const TestTwoTrader = require('./scenarios/testTwoTrader');
 const TestBalances = require('./scenarios/testBalances');
 const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
+const testMarketStopOrder = require('./scenarios/testMarketStopOrders');
 
 const ScenarioList = {
   TestSingleTrader,
   TestTwoTrader,
   TestBalances,
+  testMarketStopOrder
 };
 
 let arg = [];
