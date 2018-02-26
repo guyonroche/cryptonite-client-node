@@ -1,13 +1,21 @@
+const fs = require('fs');
+const commander = require('commander');
 const CryptoniteClient = require('../../lib/cryptonite-client');
-const config = require('./config.json');
+const packageConfig = require('../../package');
 
+commander
+  .version(packageConfig.version)
+  .arguments('')
+  .option('-c, --config <filename>', 'Config file', './config.json')
+  .option('-s, --start <start>', 'Start of query', 0)
+  .option('-l, --limit <limit>', 'Limit of query', 10)
+
+commander.parse(process.argv);
+
+const config = JSON.parse(fs.readFileSync(commander.config));
 const client = new CryptoniteClient(config);
 
-const start = process.argv[2];
-const limit = process.argv[3];
-
-
-client.getMyOrders(start, limit)
+client.getMyOrders(commander.start, commander.limit)
   .then(result => {
     console.log(JSON.stringify(result));
   })
