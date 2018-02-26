@@ -77,13 +77,26 @@ class Trader {
     return new Promise((resolve) => {
       if(side === 'B') {
         this.getLastBuyPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, options));
+        resolve(this.createOrder(price, side, quantity, 'L', options));
       }
       else {
         this.getLastSellPriceAndQuantity(price, quantity, side);
-        resolve(this.createOrder(price, side, quantity, options));
+        resolve(this.createOrder(price, side, quantity, 'L', options));
       }
     });
+  }
+
+  placeLimitOrderSpread(price, quantity, count, margin) {
+    const promises = [];
+    for (let i = 1; i <= count; i++) {
+      promises.push(
+        this.createOrder(price + (i * margin), 'S', quantity, 'L')
+      );
+      promises.push(
+        this.createOrder(price - (i * margin), 'B', quantity, 'L')
+      );
+    }
+    return Promise.all(promises);
   }
 
   getQuantity(config, side) {
@@ -105,16 +118,33 @@ class Trader {
     orderbook[this.config.name][side].quantities.push(quantity);
   }
 
-  createOrder(price, side, quantity, options ={}) {
+  createOrder(price, side, quantity, type, stop = 0, options ={}) {
     const market = this.market;
-    const type = 'L';
     const order = {
       market,
       side,
       type,
-      quantity,
       price,
     };
+
+    const isBuySide = (side) => side === 'B';
+    const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
+    const isStopOrder = (type) => type[0] === 'S';
+
+    if (isMarketOrder(type)) {
+      if (isBuySide(side)) {
+        order.value = quantity;
+      } else {
+        order.quantity = quantity;
+      }
+    } else {
+      order.quantity = quantity;
+      order.price = price;
+    }
+    if (isStopOrder(type)) {
+      order.stop = stop;
+    }
+
     return this.client.createOrder(order)
       .then(
         () => {
@@ -131,6 +161,13 @@ class Trader {
           throw error;
         }
       );
+  }
+
+  getMyOrders() {
+    return this.client.getMyOrders(1, 10)
+      .then(data => {
+        console.log('my orders ', data, this.config.name);
+      });
   }
 }
 
