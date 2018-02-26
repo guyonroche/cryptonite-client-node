@@ -3,7 +3,7 @@ const logInitialDetails = require('./initilaLogger');
 const balanceDetails = require('./balanceDetailLogger');
 
 const isBuySide = (side) => side === 'B';
-const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
+// const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
 
 let orderbook = {};
 

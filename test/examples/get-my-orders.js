@@ -8,7 +8,7 @@ commander
   .arguments('')
   .option('-c, --config <filename>', 'Config file', './config.json')
   .option('-s, --start <start>', 'Start of query', 0)
-  .option('-l, --limit <limit>', 'Limit of query', 10)
+  .option('-l, --limit <limit>', 'Limit of query', 10);
 
 commander.parse(process.argv);
 
