@@ -1,6 +1,6 @@
 const program = require('commander');
 const fs = require('fs');
-let allowedScenarios = ['TestSingleTrader', 'TestTwoTrader', 'TestBalances'];
+let allowedScenarios = ['TestSingleTrader', 'TestTwoTrader', 'TestBalances', 'testMarketStopOrder'];
 
 const Commander = (arg) => {
   program

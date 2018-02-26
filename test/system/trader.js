@@ -118,7 +118,7 @@ class Trader {
     orderbook[this.config.name][side].quantities.push(quantity);
   }
 
-  createOrder(price, side, quantity, type, options ={}) {
+  createOrder(price, side, quantity, type, stop = 0, options ={}) {
     const market = this.market;
     const order = {
       market,
@@ -142,7 +142,7 @@ class Trader {
       order.price = price;
     }
     if (isStopOrder(type)) {
-      order.stop = 0.25;
+      order.stop = stop;
     }
 
     return this.client.createOrder(order)
