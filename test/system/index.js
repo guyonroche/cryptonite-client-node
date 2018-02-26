@@ -21,7 +21,7 @@ const scenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
 let arg = [];
 
 function init() {
-  Commander.init(arg);
+  Commander.init(arg, Object.keys(scenarioList));
   const config = JSON.parse(fs.readFileSync(arg.config).toString());
 
   const traders = config.traders;

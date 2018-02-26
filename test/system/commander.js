@@ -1,8 +1,7 @@
 const program = require('commander');
 const fs = require('fs');
-let allowedScenarios = ['TestSingleTrader', 'TestTwoTrader', 'TestBalances', 'testMarketStopOrder'];
 
-const Commander = (arg) => {
+const Commander = (arg, allowedScenarios) => {
   program
     .version('0.1.0')
     .option('-s, --scenario <scenarioName>', 'choose scenario')
