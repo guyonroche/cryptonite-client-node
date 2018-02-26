@@ -5,7 +5,8 @@ const Commander = require('./commander');
 const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
 
-const ScenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
+// Read the scenarios/ directory, sort the files by index and assign to scenarioList
+const scenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
   .filter(filename => /\.js$/.test(filename))
   .map(filename => ({
     scenario: require(`${__dirname}/scenarios/${filename}`),
@@ -38,10 +39,10 @@ function createTraders(traders) {
 
 function runScenarios(traders) {
   if (arg.scenario) {
-    return ScenarioList[arg.scenario](...traders);
+    return scenarioList[arg.scenario](...traders);
   } else {
     let promise = Promish.resolve();
-    Object.values(ScenarioList).forEach(scenario => {
+    Object.values(scenarioList).forEach(scenario => {
       promise = promise
         .then(() => scenario(...traders));
     });
