@@ -15,6 +15,7 @@ class Trader {
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
     this.myOrders = [];
+    this.trades = [];
   }
 
   init_state() {
@@ -142,6 +143,27 @@ class Trader {
     return Promise.all(promises);
   }
 
+  placeTrailingStopOrder(side, quantity, trailType, trail, options) {
+    if(isBuySide(side)) {
+      return this.createOrder({
+        side,
+        value: quantity,
+        type: 'ST',
+        trailType,
+        trail
+      }, options);
+    }
+    else {
+      return this.createOrder({
+        side,
+        quantity,
+        type: 'ST',
+        trailType,
+        trail
+      }, options);
+    }
+  }
+
   getQuantity(config, side) {
     let quntities = orderbook[config.name][side].quantities.map(q => {
       return q;
@@ -182,6 +204,14 @@ class Trader {
       .then(data => {
         console.log('my orders ', data, this.config.name);
         this.myorders = data.orders;
+      });
+  }
+
+  getMyTrades() {
+    return this.client.getMyTrades()
+      .then(data => {
+        console.log('my trades ', data, this.config.name);
+        this.trades = data.trades;
       });
   }
 }
