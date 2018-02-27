@@ -6,7 +6,7 @@ const run = (trader1, trader2, trader3) => {
     .then(() => trader2.init_state(trader2.config))
     .then(() => trader3.init_state(trader3.config))
     .then(() => trader1.placeLimitOrderSpread(0.25, 0.5, 5, 0.01))
-    //.then(() => trader2.placeTrailingStopOrder('B', 0.26, 'R', 0.05))
+    .then(() => trader2.placeTrailingStopOrder('B', 0.26, 'R', 0.05))
     .then(() => trader3.placeLimitOrder('B', 1, 0.26))
     .delay(1500)
     .then(() => trader1.getMyTrades())

@@ -150,7 +150,8 @@ class Trader {
         value: quantity,
         type: 'ST',
         trailType,
-        trail
+        trail,
+        stop: trail,
       }, options);
     }
     else {
@@ -159,7 +160,8 @@ class Trader {
         quantity,
         type: 'ST',
         trailType,
-        trail
+        trail,
+        stop: trail,
       }, options);
     }
   }
