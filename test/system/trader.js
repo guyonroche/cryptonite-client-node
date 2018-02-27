@@ -66,7 +66,7 @@ class Trader {
       });
   }
 
-  cancelOrderByID(orderId){
+  cancelOrderById(orderId){
     return this.client.cancelOrder(orderId)
       .then(() => {
         console.log('order is cancelled successfully');
@@ -178,7 +178,7 @@ class Trader {
   }
 
   getMyOrders() {
-    return this.client.getMyOrders(0, 10)
+    return this.client.getMyOrders()
       .then(data => {
         console.log('my orders ', data, this.config.name);
         this.myorders = data.orders;
