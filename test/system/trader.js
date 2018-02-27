@@ -14,6 +14,7 @@ class Trader {
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
+    this.myOrders = [];
   }
 
   init_state() {
@@ -62,6 +63,13 @@ class Trader {
       })
       .catch(err => {
         console.log(err.message);
+      });
+  }
+
+  cancelOrderById(orderId){
+    return this.client.cancelOrder(orderId)
+      .then(() => {
+        console.log('order is cancelled successfully');
       });
   }
 
@@ -170,9 +178,10 @@ class Trader {
   }
 
   getMyOrders() {
-    return this.client.getMyOrders(1, 10)
+    return this.client.getMyOrders()
       .then(data => {
         console.log('my orders ', data, this.config.name);
+        this.myorders = data.orders;
       });
   }
 }
