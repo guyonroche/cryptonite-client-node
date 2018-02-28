@@ -1,7 +1,9 @@
 const fs = require('fs');
 const Promish = require('promish');
-const Trader = require('./trader');
+
 const Commander = require('./commander');
+const Trader = require('./trader');
+
 const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
 
@@ -20,30 +22,34 @@ const scenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
 
 let arg = [];
 
-function init() {
-  Commander.init(arg, Object.keys(scenarioList));
-  const config = JSON.parse(fs.readFileSync(arg.config).toString());
+function createTraders(traders) {
+  const promises = traders.map(t => {
+    const trader = new Trader(t);
+    return trader.initialise()
+      .then(() => trader.cancelAllOrders())
+      .then(() => trader);
+  });
 
-  const traders = config.traders;
-  createTraders(traders)
-    .then(runSequence);
+  return Promish.all(promises)
+    .delay(2000);
 }
 
-function createTraders(traders) {
-  const list = [];
-  for (let t of traders) {
-    list.push(new Trader(t));
-  }
-  return Promise.resolve(list);
+function resetTraders(traders) {
+  traders.forEach(trader => {
+    trader.initState();
+  });
+  return Promish.resolve();
 }
 
 function runScenarios(traders) {
   if (arg.scenario) {
-    return scenarioList[arg.scenario](...traders);
+    return resetTraders(traders)
+      .then(() => scenarioList[arg.scenario](...traders));
   } else {
     let promise = Promish.resolve();
     Object.values(scenarioList).forEach(scenario => {
       promise = promise
+        .then(() => resetTraders(traders))
         .then(() => scenario(...traders));
     });
     return promise;
@@ -51,15 +57,19 @@ function runScenarios(traders) {
 }
 
 function runSequence(traders) {
-  Promish.resolve()
+  return Promish.resolve()
     .then(() => systemCleanup(traders))
     .then(() => runScenarios(traders))
-    .delay(1000) // to give cancel-order side effects to complete
     .then(() => result(traders))
-    .then(() => process.exit())
-    .catch(error => {
-      console.error(error.stack);
-    });
+    .then(() => process.exit(0));
 }
 
-init();
+Commander.init(arg, Object.keys(scenarioList));
+const config = JSON.parse(fs.readFileSync(arg.config).toString());
+
+createTraders(config.traders)
+  .then(runSequence)
+  .catch(error => {
+    console.error(error.stack);
+    process.exit(1);
+  });
