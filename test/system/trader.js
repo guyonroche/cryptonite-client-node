@@ -16,8 +16,6 @@ class Trader {
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
-    this.myOrders = [];
-    this.trades = [];
   }
 
   initialise() {
@@ -70,7 +68,7 @@ class Trader {
     return this.client.connect();
   }
 
-  waitFor(f, title, timeout = 10000) {
+  waitFor(f, title, timeout = 20000) {
     console.log('Waiting for', title);
     return new Promish((resolve, reject) => {
       if (f()) {
@@ -89,6 +87,22 @@ class Trader {
           resolve();
         }
       };
+    });
+  }
+
+  expectMatchingTrade(quantity, price) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if(this.trades && this.trades.length !== 0) {
+          let tradeClone =  JSON.parse(JSON.stringify(this.trades));
+          for (let i = 0; i < tradeClone.length; i++) {
+            if ((tradeClone[i].quantity === quantity && tradeClone[i].price === price)) {
+              console.log('found', this.config.name);
+              return resolve(true);
+            }
+          }
+        }
+      }, 700);
     });
   }
 
@@ -265,15 +279,6 @@ class Trader {
     return this.client.getMyOrders()
       .then(data => {
         console.log('my orders ', data, this.config.name);
-        this.myorders = data.orders;
-      });
-  }
-
-  getMyTrades() {
-    return this.client.getMyTrades()
-      .then(data => {
-        console.log('my trades ', data, this.config.name);
-        this.trades = data.trades;
       });
   }
 }
