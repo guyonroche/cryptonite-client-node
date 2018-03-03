@@ -1,6 +1,6 @@
 const run = (trader1, trader2, trader3) => {
   console.log('****************************************************************');
-  console.log('** Scenario 5: Trailing Stop Buy Relative                     **');
+  console.log('** Scenario 5: Trailing Stop Sell Relative                     **');
   console.log('****************************************************************');
 
   return  trader1.placeLimitOrderSpread(0.25, 0.5, 5, 0.01)
