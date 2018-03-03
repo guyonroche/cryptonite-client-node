@@ -8,6 +8,8 @@ const balanceDetails = require('./balanceDetailLogger');
 const isBuySide = (side) => side === 'B';
 // const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
 
+const dblEq = (a, b) => Math.abs(a - b) < 1e-8;
+
 let orderbook = {};
 
 class Trader {
@@ -16,7 +18,6 @@ class Trader {
     this.client = new CryptoniteClient(this.config);
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
-    this.myOrders = [];
   }
 
   initialise() {
@@ -91,6 +92,17 @@ class Trader {
         }
       };
     });
+  }
+
+  hasMatchingTrade(quantity, price) {
+    return this.trades.some(
+      trade => dblEq(trade.quantity, quantity) && dblEq(trade.price, price)
+    );
+  }
+
+  hasOpenOrders(count) {
+    console.log('hasOpenOrders', this.orders);
+    return this.orders.filter(order => order.isOpen).length === count;
   }
 
   cleanUp() {
@@ -216,6 +228,29 @@ class Trader {
     return Promise.all(promises);
   }
 
+  placeTrailingStopOrder(side, quantity, trailType, trail, options) {
+    if(isBuySide(side)) {
+      return this.createOrder({
+        side,
+        value: quantity,
+        type: 'ST',
+        trailType,
+        trail,
+        stop: trail,
+      }, options);
+    }
+    else {
+      return this.createOrder({
+        side,
+        quantity,
+        type: 'ST',
+        trailType,
+        trail,
+        stop: trail,
+      }, options);
+    }
+  }
+
   getQuantity(config, side) {
     let quntities = orderbook[config.name][side].quantities.map(q => {
       return q;
@@ -235,10 +270,17 @@ class Trader {
 
     return this.client.createOrder(order)
       .then(
-        () => {
+        result => {
           if (options.expectFail) {
             throw new Error('createOrder succeeded when expected to fail');
           }
+
+          // add order to list
+          order.orderId = result.orderId;
+          order.isOpen = true;
+          order.isBooked = false;
+          this._addMyOrder(order);
+
           console.log((order.side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', order.quantity, 'price is' , order.price, 'order placed', this.config.name);
         },
         error => {
@@ -255,7 +297,6 @@ class Trader {
     return this.client.getMyOrders()
       .then(data => {
         console.log('my orders ', data, this.config.name);
-        this.myorders = data.orders;
       });
   }
 }
