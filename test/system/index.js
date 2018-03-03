@@ -4,7 +4,6 @@ const Promish = require('promish');
 const Commander = require('./commander');
 const Trader = require('./trader');
 
-const systemCleanup = require('./systemCleanUp');
 const result = require('./systemTestResult');
 
 // Read the scenarios/ directory, sort the files by index and assign to scenarioList
