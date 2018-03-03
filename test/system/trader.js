@@ -97,12 +97,27 @@ class Trader {
           let tradeClone =  JSON.parse(JSON.stringify(this.trades));
           for (let i = 0; i < tradeClone.length; i++) {
             if ((tradeClone[i].quantity === quantity && tradeClone[i].price === price)) {
-              console.log('found', this.config.name);
+              console.log('found trade of', quantity, 'at', price, 'for', this.config.name);
               return resolve(true);
             }
           }
+          console.log('not found trade of' , quantity, 'at', price, 'for', this.config.name);
         }
       }, 700);
+    });
+  }
+
+  checkOpenOrder() {
+    return new Promise((resolve) => {
+      if(this.orders && this.orders.length !== 0) {
+        let orderClone =  JSON.parse(JSON.stringify(this.orders));
+        for (let i = 0; i < orderClone.length; i++) {
+          if (!orderClone[i].isBooked) {
+            console.log('found one open order', this.config.name);
+            return resolve(true);
+          }
+        }
+      }
     });
   }
 
