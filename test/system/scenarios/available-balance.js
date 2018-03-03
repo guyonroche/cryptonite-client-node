@@ -6,6 +6,7 @@ const run = (trader1, trader2) => {
   console.log('****************************************************************');
 
   return Promish.resolve()
+    .then(() => trader2.getCurrentBalance())
     .then(() => trader2.placeLimitOrder('S', trader2.getBalance().assets + 25, 0.14, { expectFail: true }))
     .then(() => trader2.placeLimitOrder('S', ((trader2.getBalance().assets/2)), 0.14))
     .then(() => trader2.placeLimitOrder('S', ((trader2.getBalance().assets * 2) * 3 / 4), 0.14, { expectFail: true }))
