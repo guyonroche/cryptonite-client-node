@@ -68,7 +68,7 @@ class Trader {
     return this.client.connect();
   }
 
-  waitFor(f, title, timeout = 20000) {
+  waitFor(f, title, timeout = 10000) {
     console.log('Waiting for', title);
     return new Promish((resolve, reject) => {
       if (f()) {
@@ -90,35 +90,29 @@ class Trader {
     });
   }
 
-  expectMatchingTrade(quantity, price) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if(this.trades && this.trades.length !== 0) {
-          let tradeClone =  JSON.parse(JSON.stringify(this.trades));
-          for (let i = 0; i < tradeClone.length; i++) {
-            if ((tradeClone[i].quantity === quantity && tradeClone[i].price === price)) {
-              console.log('found trade of', quantity, 'at', price, 'for', this.config.name);
-              return resolve(true);
-            }
-          }
-          console.log('not found trade of' , quantity, 'at', price, 'for', this.config.name);
+  hasMatchingTrade(quantity, price) {
+    if(this.trades && this.trades.length !== 0) {
+      let tradeClone =  JSON.parse(JSON.stringify(this.trades));
+      for (let i = 0; i < tradeClone.length; i++) {
+        if ((tradeClone[i].quantity === quantity && tradeClone[i].price === price)) {
+          return true;
         }
-      }, 700);
-    });
+      }
+      return false;
+    }
   }
 
   checkOpenOrder() {
-    return new Promise((resolve) => {
-      if(this.orders && this.orders.length !== 0) {
-        let orderClone =  JSON.parse(JSON.stringify(this.orders));
-        for (let i = 0; i < orderClone.length; i++) {
-          if (!orderClone[i].isBooked) {
-            console.log('found one open order', this.config.name);
-            return resolve(true);
-          }
+    if(this.orders && this.orders.length !== 0) {
+      let orderClone =  JSON.parse(JSON.stringify(this.orders));
+      for (let i = 0; i < orderClone.length; i++) {
+        if (!orderClone[i].isBooked) {
+          console.log('found one open order', this.config.name);
+          return true;
         }
       }
-    });
+      return false;
+    }
   }
 
   initState() {
