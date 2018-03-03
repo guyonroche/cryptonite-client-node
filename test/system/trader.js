@@ -74,6 +74,7 @@ class Trader {
 
   waitFor(f, title, timeout = 10000) {
     console.log('Waiting for', title);
+    const error = new Error(`Timed out waiting for ${title}`);
     return new Promish((resolve, reject) => {
       if (f()) {
         resolve();
@@ -82,7 +83,7 @@ class Trader {
       const id = uuid.v4();
       const timer = setTimeout(() => {
         delete this.waiters[id];
-        reject(new Error(`Timed out waiting for ${title}`));
+        reject(error);
       }, timeout);
       this.waiters[id] = () => {
         if (f()) {
@@ -101,7 +102,6 @@ class Trader {
   }
 
   hasOpenOrders(count) {
-    console.log('hasOpenOrders', this.orders);
     return this.orders.filter(order => order.isOpen).length === count;
   }
 
@@ -236,7 +236,6 @@ class Trader {
         type: 'ST',
         trailType,
         trail,
-        stop: trail,
       }, options);
     }
     else {
@@ -246,7 +245,6 @@ class Trader {
         type: 'ST',
         trailType,
         trail,
-        stop: trail,
       }, options);
     }
   }

@@ -4,6 +4,10 @@ const run = (trader1, trader2, trader3) => {
   console.log('****************************************************************');
 
   return  trader1.placeLimitOrderSpread(0.25, 0.5, 5, 0.01)
+    // make some trades to set the market price
+    .then(() => trader3.placeLimitOrder('S', 1, 0.24))
+    .then(() => trader1.placeLimitOrder('B', 1, 0.24))
+
     .then(() => trader2.placeTrailingStopOrder('S', 0.5, 'R', 0.05))
 
     .then(() => trader3.placeLimitOrder('B', 1, 0.26))
