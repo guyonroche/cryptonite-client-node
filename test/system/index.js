@@ -26,7 +26,6 @@ function createTraders(traders) {
   const promises = traders.map(t => {
     const trader = new Trader(t);
     return trader.initialise()
-      .then(() => trader.cancelAllOrders())
       .then(() => trader);
   });
 
@@ -35,10 +34,11 @@ function createTraders(traders) {
 }
 
 function resetTraders(traders) {
-  traders.forEach(trader => {
-    trader.initState();
-  });
-  return Promish.resolve();
+  const promises = traders.map(
+    trader => trader.cleanUp()
+      .then(() => trader.initState())
+  );
+  return Promish.all(promises);
 }
 
 function runScenarios(traders) {
@@ -58,7 +58,6 @@ function runScenarios(traders) {
 
 function runSequence(traders) {
   return Promish.resolve()
-    .then(() => systemCleanup(traders))
     .then(() => runScenarios(traders))
     .then(() => result(traders))
     .then(() => process.exit(0));

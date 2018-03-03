@@ -10,7 +10,9 @@ const run = (trader1, trader2, trader3) => {
     .then(() => trader2.placeStopOrder('B', 0.25, 0.265))
     .then(() => trader2.placeStopOrder('S', 1, 0.235))
     .then(() => trader3.placeMarketOrder('B', 1))
+    .then(() => trader2.waitFor(() => !trader2.orders[0].isOpen, "Trader 2's first stop order is closed"))
     .then(() => trader3.placeMarketOrder('S', 4))
+    .then(() => trader2.waitFor(() => !trader2.orders[1].isOpen, "Trader 2's second stop order is closed"))
     .then(() => trader2.getMyOrders())
     .then(() => trader1.cancelAllOrders());
 };

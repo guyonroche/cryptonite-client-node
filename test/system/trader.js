@@ -26,15 +26,7 @@ class Trader {
       console.log('message', JSON.stringify(m));
       switch (m.msg) {
         case 'my-orders':
-          m.orders.forEach(order => {
-            const index = this.orderIndex[order.orderId];
-            if (index !== undefined) {
-              this.orders[index] = order;
-            } else {
-              this.orderIndex[order.orderId] = this.orders.length;
-              this.orders.push(order);
-            }
-          });
+          m.orders.forEach(order => this._addMyOrder(order));
 
           break;
         case 'my-trades':
@@ -69,6 +61,16 @@ class Trader {
     return this.client.connect();
   }
 
+  _addMyOrder(order) {
+    const index = this.orderIndex[order.orderId];
+    if (index !== undefined) {
+      this.orders[index] = order;
+    } else {
+      this.orderIndex[order.orderId] = this.orders.length;
+      this.orders.push(order);
+    }
+  }
+
   waitFor(f, title, timeout = 10000) {
     console.log('Waiting for', title);
     return new Promish((resolve, reject) => {
@@ -89,6 +91,19 @@ class Trader {
         }
       };
     });
+  }
+
+  cleanUp() {
+    // ensure trader has no open orders
+    return this.client.getMyOrders()
+      .then(({orders}) => {
+        orders.forEach(order => this._addMyOrder(order));
+        return this.client.cancelAllOrders();
+      })
+      .then(() => this.waitFor(
+        () => this.orders.every(o => !o.isOpen),
+        `${this.config.name} to have no open orders`
+      ));
   }
 
   initState() {
@@ -186,7 +201,6 @@ class Trader {
         stop,
       }, options);
     }
-
   }
 
   placeLimitOrderSpread(price, quantity, count, margin) {
