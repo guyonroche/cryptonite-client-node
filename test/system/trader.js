@@ -8,6 +8,8 @@ const balanceDetails = require('./balanceDetailLogger');
 const isBuySide = (side) => side === 'B';
 // const isMarketOrder = (type) => ['M', 'S', 'ST'].includes(type);
 
+const dblEq = (a, b) => Math.abs(a - b) < 1e-8;
+
 let orderbook = {};
 
 class Trader {
@@ -91,28 +93,14 @@ class Trader {
   }
 
   hasMatchingTrade(quantity, price) {
-    if(this.trades && this.trades.length !== 0) {
-      let tradeClone =  JSON.parse(JSON.stringify(this.trades));
-      for (let i = 0; i < tradeClone.length; i++) {
-        if ((tradeClone[i].quantity === quantity && tradeClone[i].price === price)) {
-          return true;
-        }
-      }
-      return false;
-    }
+    return this.trades.some(
+      trade => dblEq(trade.quantity, quantity) && dblEq(trade.price, price)
+    );
   }
 
-  checkOpenOrder() {
-    if(this.orders && this.orders.length !== 0) {
-      let orderClone =  JSON.parse(JSON.stringify(this.orders));
-      for (let i = 0; i < orderClone.length; i++) {
-        if (!orderClone[i].isBooked) {
-          console.log('found one open order', this.config.name);
-          return true;
-        }
-      }
-      return false;
-    }
+  hasOpenOrders(count) {
+    console.log('hasOpenOrders', this.orders);
+    return this.orders.filter(order => order.isOpen).length === count;
   }
 
   initState() {
@@ -268,10 +256,23 @@ class Trader {
 
     return this.client.createOrder(order)
       .then(
-        () => {
+        result => {
           if (options.expectFail) {
             throw new Error('createOrder succeeded when expected to fail');
           }
+
+          // add order to list
+          order.orderId = result.orderId;
+          order.isOpen = true;
+          order.isBooked = false;
+          const index = this.orderIndex[order.orderId];
+          if (index !== undefined) {
+            this.orders[index] = order;
+          } else {
+            this.orderIndex[order.orderId] = this.orders.length;
+            this.orders.push(order);
+          }
+
           console.log((order.side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', order.quantity, 'price is' , order.price, 'order placed', this.config.name);
         },
         error => {
