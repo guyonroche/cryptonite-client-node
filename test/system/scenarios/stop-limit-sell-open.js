@@ -1,6 +1,6 @@
 const run = (trader1, trader2, trader3) => {
   console.log('****************************************************************');
-  console.log('** Scenario 9:  Stop Limit Sell Order Open                     **');
+  console.log('** Scenario 10:  Stop Limit Sell Order Open                     **');
   console.log('****************************************************************');
 
   return  trader1.placeLimitOrderSpread(0.25, 1, 5, 0.01)
