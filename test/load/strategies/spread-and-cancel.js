@@ -1,3 +1,4 @@
+const Promish = require('promish');
 
 module.exports = class SpreadAndCancel {
   constructor(strategyConfig, config) {
@@ -9,7 +10,21 @@ module.exports = class SpreadAndCancel {
   }
 
   initialise() {
+    this.traders = [];
+
     // using the two config files, create all the traders and initialise
+    const promises = this.config.traders.map(traderConfig => {
+      const config = {
+        ...this.config.server,
+        ...traderConfig,
+        market: this.config.markets[0],
+      };
+
+      const trader = new SpreadAndCancelTrader(config);
+      this.traders.push(trader);
+      return trader.initialise();
+    });
+    return Promish.all(promises);
   }
 
   start() {

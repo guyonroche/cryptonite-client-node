@@ -14,6 +14,7 @@ class Trader {
 
   initState() {
     this.orders = [];
+    this.orderCount = 0;
     this.tradeCount = 0;
     this.transactionCount = 0;
   }
@@ -53,6 +54,7 @@ class Trader {
       } else {
         this.orderIndex[order.orderId] = this.orders.length;
         this.orders.push(order);
+        this.orderCount++;
       }
     } else {
       this.orders = this.orders.filter(
