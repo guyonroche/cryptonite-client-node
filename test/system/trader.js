@@ -105,6 +105,10 @@ class Trader {
     return this.orders.filter(order => order.isOpen).length === count;
   }
 
+  hasOpenBookedOrders(count) {
+    return this.orders.filter(order => order.isOpen && order.isBooked).length === count;
+  }
+
   cleanUp() {
     // ensure trader has no open orders
     return this.client.getMyOrders()
