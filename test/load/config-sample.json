@@ -1,0 +1,19 @@
+{
+  "server": {
+    "protocol": "https:",
+    "hostname": "server-host goes here",
+    "options": {
+      "rejectUnauthorized": false
+    }
+  },
+  "markets": [
+    "LTC/BTC"
+  ],
+  "traders": [
+    {
+      "name": "trader 1",
+      "apiKey": "api key goes here",
+      "apiSecret": "api secret goes here"
+    }
+  ]
+}
