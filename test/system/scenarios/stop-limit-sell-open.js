@@ -17,7 +17,7 @@ const run = (trader1, trader2, trader3) => {
     .then(() => trader1.waitFor(() => trader1.hasMatchingTrade(1, 0.23), 'Trader 1 receive a trade of 1 LTC at 0.23'))
     .then(() => trader3.waitFor(() => trader3.hasMatchingTrade(1, 0.23), 'Trader 3 receive a trade of 1 LTC at 0.23'))
 
-    .then(() => trader2.waitFor(() => trader2.hasOpenOrders(1), 'To check trader2 has one open order which is booked'));
+    .then(() => trader2.waitFor(() => trader2.hasOpenBookedOrders(1), 'To check trader2 has one open order which is booked'));
 
 };
 
