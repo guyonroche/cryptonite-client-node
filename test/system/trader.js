@@ -215,6 +215,16 @@ class Trader {
     }
   }
 
+  placeStopLimitOrder(price, side, quantity, stop, options) {
+    return this.createOrder({
+      price,
+      side,
+      quantity,
+      type: 'SL',
+      stop,
+    }, options);
+  }
+
   placeLimitOrderSpread(price, quantity, count, margin) {
     const promises = [];
     for (let i = 1; i <= count; i++) {
