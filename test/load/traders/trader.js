@@ -1,7 +1,7 @@
 const Promish = require('promish');
 const uuid = require('uuid');
 
-const CryptoniteClient = require('../../lib/cryptonite-client');
+const CryptoniteClient = require('../../../lib/cryptonite-client');
 
 const isBuySide = (side) => side === 'B';
 
@@ -16,6 +16,7 @@ class Trader {
     this.orders = [];
     this.orderCount = 0;
     this.tradeCount = 0;
+    this.orderIndex = {};
     this.transactionCount = 0;
   }
 
@@ -235,6 +236,10 @@ class Trader {
           throw error;
         }
       );
+  }
+
+  cancelAllOrders(market) {
+    return this.client.cancelMarketOrders(market).then(() =>  console.log(`Cancelling ${market} Market orders for`, this.config.name));
   }
 }
 

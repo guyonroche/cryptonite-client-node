@@ -13,7 +13,9 @@
     {
       "name": "trader 1",
       "apiKey": "api key goes here",
-      "apiSecret": "api secret goes here"
+      "apiSecret": "api secret goes here",
+
+      "interval" : 3000
     }
   ]
 }

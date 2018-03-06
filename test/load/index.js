@@ -5,8 +5,8 @@ const packageConfig = require('../../package');
 program
   .version(packageConfig.version)
   .option('-t, --time <milliseconds>', 'Time to run', Infinity)
-  .option('-s, --strategy <filename>', 'Strategy file', './strategy.json')
-  .option('-c, --config <filename>', 'Config file', './config.json');
+  .option('-s, --strategy <filename>', 'Strategy file', './spread-and-cancel-strategy.json')
+  .option('-c, --config <filename>', 'Config file', './configs/config.json');
 
 program.parse(process.argv);
 
