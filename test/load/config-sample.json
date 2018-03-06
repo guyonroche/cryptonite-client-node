@@ -4,7 +4,8 @@
     "hostname": "server-host goes here",
     "options": {
       "rejectUnauthorized": false
-    }
+    },
+    "interval" : 100
   },
   "markets": [
     "LTC/BTC"

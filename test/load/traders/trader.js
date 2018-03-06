@@ -1,7 +1,7 @@
 const Promish = require('promish');
 const uuid = require('uuid');
 
-const CryptoniteClient = require('../../lib/cryptonite-client');
+const CryptoniteClient = require('../../../lib/cryptonite-client');
 
 const isBuySide = (side) => side === 'B';
 
@@ -16,6 +16,7 @@ class Trader {
     this.orders = [];
     this.orderCount = 0;
     this.tradeCount = 0;
+    this.orderIndex = {};
     this.transactionCount = 0;
   }
 
@@ -23,7 +24,6 @@ class Trader {
     this.waiters = {};
     this.initState();
     this.client.on('message', m => {
-      console.log('message', JSON.stringify(m));
       switch (m.msg) {
         case 'my-orders':
           m.orders.forEach(order => this._addMyOrder(order));
@@ -64,7 +64,6 @@ class Trader {
   }
 
   waitFor(f, title, timeout = 10000) {
-    console.log('Waiting for', title);
     const error = new Error(`Timed out waiting for ${title}`);
     return new Promish((resolve, reject) => {
       if (f()) {
@@ -224,17 +223,18 @@ class Trader {
           order.isOpen = true;
           order.isBooked = false;
           this._addMyOrder(order);
-
-          console.log((order.side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', order.quantity, 'price is' , order.price, 'order placed', this.config.name);
         },
         error => {
           if (options.expectFail) {
-            console.log('Create Order failed but this was expected.');
             return;
           }
           throw error;
         }
       );
+  }
+
+  cancelAllOrders(market) {
+    return this.client.cancelMarketOrders(market);
   }
 }
 
