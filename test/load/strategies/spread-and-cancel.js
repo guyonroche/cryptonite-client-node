@@ -1,5 +1,5 @@
 const Promish = require('promish');
-const SpreadAndCancelTrader = require('../traders/spread-and-calcel-trader');
+const SpreadAndCancelTrader = require('../traders/spread-and-cancel-trader');
 module.exports = class SpreadAndCancel {
   constructor(strategyConfig, config) {
     // configuration about this strategy
@@ -42,12 +42,10 @@ module.exports = class SpreadAndCancel {
   }
 
   report() {
-    return new Promise(resolve => {
-      // console.log results of the test, e.g. how many orders were
-      // successfully created/cancelled totalled across all traders.
-      this.traders.map(trader => console.log('No of orders placed are ', trader.orderCount));
-      resolve(true);
-    });
-
+    // console.log results of the test, e.g. how many orders were
+    // successfully created/cancelled totalled across all traders.
+    const totalOrders = this.traders.reduce((count, trader) => count + trader.orderCount, 0);
+    console.log('Num Traders', this.traders.length);
+    console.log('Total Order Count:', totalOrders);
   }
 };

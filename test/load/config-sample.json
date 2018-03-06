@@ -4,7 +4,8 @@
     "hostname": "server-host goes here",
     "options": {
       "rejectUnauthorized": false
-    }
+    },
+    "interval" : 100
   },
   "markets": [
     "LTC/BTC"
@@ -13,9 +14,7 @@
     {
       "name": "trader 1",
       "apiKey": "api key goes here",
-      "apiSecret": "api secret goes here",
-
-      "interval" : 3000
+      "apiSecret": "api secret goes here"
     }
   ]
 }
