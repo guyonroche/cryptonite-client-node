@@ -2,7 +2,6 @@ const Promish = require('promish');
 const Trader = require('./trader');
 
 class SpreadAndCancelTrader extends Trader {
-
   start() {
     this.isActive = true;
     const loop = () => {

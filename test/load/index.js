@@ -52,7 +52,7 @@ strategy.initialise()
     if (timeout !== Infinity) {
       showProgress(timeout);
     } else {
-      console.log('Running...')
+      console.log('Running...');
     }
   })
   .catch(error => {
