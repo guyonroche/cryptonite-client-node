@@ -1,0 +1,7 @@
+{
+  "name": "random-trader",
+  "price" : 0.25,
+  "random" : 0.05,
+  "orderCount": 5,
+  "orderDifference": 0.01
+}

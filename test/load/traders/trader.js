@@ -26,11 +26,14 @@ class Trader {
     this.client.on('message', m => {
       switch (m.msg) {
         case 'my-orders':
+          this.orderCount += m.orders.length;
           m.orders.forEach(order => this._addMyOrder(order));
 
           break;
         case 'my-trades':
-          this.tradeCount++;
+          this.tradeCount += m.trades.length;
+          m.trades.forEach(trade => this.onTrade(trade));
+
           break;
         case 'my-transactions':
           this.transactionCount++;
@@ -44,6 +47,8 @@ class Trader {
 
     return this.client.connect();
   }
+
+  onTrade() {}
 
   _addMyOrder(order) {
     // only keep track of open orders
