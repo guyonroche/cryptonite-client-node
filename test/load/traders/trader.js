@@ -27,6 +27,7 @@ class Trader {
     this.client.on('message', m => {
       switch (m.msg) {
         case 'my-orders':
+          this.orderCount += m.orders.length;
           m.orders.forEach(order => this._addMyOrder(order));
 
           break;

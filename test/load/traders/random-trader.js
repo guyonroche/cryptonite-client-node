@@ -39,6 +39,7 @@ class RandomTrader extends Trader {
   stop() {
     // stop the loop and wait for current iteration to complete
     this.isActive = false;
+    this.cancelAllOrders(this.config.market);
     return this.promise;
   }
 }
