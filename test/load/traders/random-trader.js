@@ -6,12 +6,11 @@ class RandomTrader extends Trader {
 
   start() {
     this.isActive = true;
-
+    this.marketPrice = strategyConfig.price;
     const loop = () => {
       if (!this.isActive) {
         this.promise = Promish.resolve();
       } else {
-        this.marketPrice = strategyConfig.price;
         let random = Math.round(Math.random(), 2);
         if (random % 2 === 0) {
           this.marketPrice = this.marketPrice + (random * strategyConfig.random);
@@ -20,7 +19,7 @@ class RandomTrader extends Trader {
         }
         this.promise = Promish.resolve()
           .then(() => this.cancelAllOrders(this.config.market))
-          .then(() => this.placeLimitOrderSpread(this.config.market, this.marketPrice, 0.5, 5, 0.01))
+          .then(() => this.placeLimitOrderSpread(this.config.market, this.marketPrice, 0.5, strategyConfig.orderCount, strategyConfig.orderDifference))
           .delay(this.config.interval)
           .then(loop)
           .catch(error => {
@@ -31,6 +30,10 @@ class RandomTrader extends Trader {
       }
     };
     loop();
+  }
+
+  onTrade(trade) {
+    this.marketPrice = trade.price;
   }
 
   stop() {

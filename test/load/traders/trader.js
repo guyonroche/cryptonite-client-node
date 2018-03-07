@@ -1,6 +1,5 @@
 const Promish = require('promish');
 const uuid = require('uuid');
-const strategyConfig = require('../random-strategy.json');
 
 const CryptoniteClient = require('../../../lib/cryptonite-client');
 
@@ -32,7 +31,8 @@ class Trader {
 
           break;
         case 'my-trades':
-          m.trades.forEach(trade => this.processTrades(trade));
+          this.tradeCount += m.trades.length;
+          m.trades.forEach(trade => this.onTrade(trade));
 
           break;
         case 'my-transactions':
@@ -48,16 +48,7 @@ class Trader {
     return this.client.connect();
   }
 
-  processTrades(trade) {
-    const index = this.trades[trade.tradeId];
-    if (index !== undefined) {
-      this.trades[index] = trade;
-    } else {
-      this.trades.unshift(trade);
-      this.trades[0].price = strategyConfig.price;
-      this.tradeCount++;
-    }
-  }
+  onTrade() {}
 
   _addMyOrder(order) {
     // only keep track of open orders
