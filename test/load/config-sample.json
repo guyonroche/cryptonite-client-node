@@ -10,10 +10,14 @@
   "markets": [
     "LTC/BTC"
   ],
-  "price" : 0.25,
   "traders": [
     {
       "name": "trader 1",
+      "apiKey": "api key goes here",
+      "apiSecret": "api secret goes here"
+    },
+    {
+      "name": "trader 2",
       "apiKey": "api key goes here",
       "apiSecret": "api secret goes here"
     }

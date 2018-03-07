@@ -1,7 +1,7 @@
 const Promish = require('promish');
 const RandomTrader = require('../traders/random-trader');
 
-module.exports = class Random {
+module.exports = class RandomStrategy {
   constructor(strategyConfig, config) {
     // configuration about this strategy
     this.strategyConfig = strategyConfig;
@@ -45,8 +45,10 @@ module.exports = class Random {
   report() {
     // console.log results of the test, e.g. how many orders were
     // successfully created/cancelled totalled across all traders.
+    const totalTrades = this.traders.reduce((count, trader) => count + trader.tradeCount, 0);
     const totalOrders = this.traders.reduce((count, trader) => count + trader.orderCount, 0);
     console.log('Num Traders', this.traders.length);
+    console.log('Total Trade Count:', totalTrades);
     console.log('Total Order Count:', totalOrders);
   }
 };

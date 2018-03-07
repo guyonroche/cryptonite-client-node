@@ -1,3 +1,5 @@
 {
-  "name": "random-trader"
+  "name": "random-trader",
+  "price" : 0.25,
+  "random" : 0.05
 }
