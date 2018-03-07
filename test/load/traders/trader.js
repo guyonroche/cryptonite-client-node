@@ -14,7 +14,6 @@ class Trader {
 
   initState() {
     this.orders = [];
-    this.trades = [];
     this.orderCount = 0;
     this.tradeCount = 0;
     this.orderIndex = {};
