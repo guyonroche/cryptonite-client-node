@@ -12,11 +12,7 @@ class RandomTrader extends Trader {
         this.promise = Promish.resolve();
       } else {
         const random = (Math.random() * 2) - 1; // generate random number from -1 to 1
-        if (random % 2 === 0) {
-          this.marketPrice = this.marketPrice + (random * strategyConfig.random);
-        } else {
-          this.marketPrice = this.marketPrice - (random * strategyConfig.random);
-        }
+        this.marketPrice = this.marketPrice + (random * strategyConfig.random);
         this.promise = Promish.resolve()
           .then(() => this.cancelAllOrders(this.config.market))
           .then(() => this.placeLimitOrderSpread(this.config.market, this.marketPrice, 0.5, strategyConfig.orderCount, strategyConfig.orderDifference))
@@ -39,7 +35,7 @@ class RandomTrader extends Trader {
   stop() {
     // stop the loop and wait for current iteration to complete
     this.isActive = false;
-    return this.promise.then(() => this.cancelAllOrders(this.config.market))
+    return this.promise.then(() => this.cancelAllOrders(this.config.market));
   }
 }
 
