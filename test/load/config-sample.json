@@ -15,6 +15,11 @@
       "name": "trader 1",
       "apiKey": "api key goes here",
       "apiSecret": "api secret goes here"
+    },
+    {
+      "name": "trader 2",
+      "apiKey": "api key goes here",
+      "apiSecret": "api secret goes here"
     }
   ]
 }
