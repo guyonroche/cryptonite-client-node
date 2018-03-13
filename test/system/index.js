@@ -15,7 +15,7 @@ const scenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
   }))
   .sort((a,b) => a.scenario.index - b.scenario.index)
   .reduce((o, t) => {
-    o[t.name] = t.scenario.run;
+    o[t.name] = t.scenario;
     return o;
   }, {});
 
@@ -47,9 +47,11 @@ function runScenarios(traders) {
   } else {
     let promise = Promish.resolve();
     Object.values(scenarioList).forEach(scenario => {
-      promise = promise
-        .then(() => resetTraders(traders))
-        .then(() => scenario(...traders));
+      if (!scenario.pending) {
+        promise = promise
+          .then(() => resetTraders(traders))
+          .then(() => scenario.run(...traders));
+      }
     });
     return promise;
   }
