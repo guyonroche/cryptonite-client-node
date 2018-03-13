@@ -17,6 +17,7 @@ module.exports = class SpreadAndCancel {
       const config = {
         ...this.config.server,
         ...traderConfig,
+        ...this.strategyConfig.trader,
         market: this.config.markets[0],
       };
 

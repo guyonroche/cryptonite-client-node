@@ -1,3 +1,6 @@
 {
-  "name": "spread-and-cancel"
+  "name": "spread-and-cancel",
+  "trader": {
+    "interval" : 10
+  }
 }
