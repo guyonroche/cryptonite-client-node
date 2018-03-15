@@ -185,15 +185,17 @@ class Trader {
     }, options);
   }
 
-  placeMarketOrder(side, quantity, options) {
+  placeMarketOrder(side, quantity, market, options) {
     if (isBuySide(side)) {
       return this.createOrder({
+        market,
         side,
         value: quantity,
         type: 'M',
       }, options);
     } else {
       return this.createOrder({
+        market,
         side,
         quantity,
         type: 'M',
@@ -272,14 +274,15 @@ class Trader {
     }
   }
 
-  getLastPriceAndQuantity(price, quantity, side) {
-    orderbook[this.config.name][side].prices.push(price);
-    orderbook[this.config.name][side].quantities.push(quantity);
+  getLastPriceAndQuantity(price, quantity) {
+    orderbook[this.config.name]['B'].prices.push(price);
+    orderbook[this.config.name]['S'].quantities.push(quantity);
   }
 
   createOrder(order, options ={}) {
-    order.market = this.market;
-
+    if (!order.market) {
+      order.market = this.market;
+    }
     return this.client.createOrder(order)
       .then(
         result => {
