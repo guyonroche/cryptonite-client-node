@@ -19,7 +19,7 @@ function testMarketOrder(trader1) {
   return Promish.resolve()
   // test of market property
     .then(() => trader1.createOrder({ market: 'BTC', type: 'M', side: 'B', quantity: 1}, { expectFail: true , expectFailReason: 'due to invalid market'}))
-    .then(() => trader1.createOrder({ market: '1', type: 'M', side: 'B', quantity: 1}, { expectFail: true ,
+    .then(() => trader1.createOrder({ market: 1, type: 'M', side: 'B', quantity: 1}, { expectFail: true ,
       expectFailReason: 'market value as integer without market'}))
 
   // test of side property
@@ -50,7 +50,7 @@ function testLimitOrder(trader2) {
     .then(() => trader2.createOrder({ market: 'BTC', type: 'L', quantity: 1, price: 0.5}, { expectFail: true,
       expectFailReason: 'limit order with invalid market' }))
 
-    .then(() => trader2.createOrder({ market: '1', type: 'L', side: 'A', quantity: 1, price: 0.5}, { expectFail: true,
+    .then(() => trader2.createOrder({ market: 1, type: 'L', side: 'A', quantity: 1, price: 0.5}, { expectFail: true,
       expectFailReason: 'limit order market value as integer' }))
 
     // test for side property
@@ -58,7 +58,7 @@ function testLimitOrder(trader2) {
     .then(() => trader2.createOrder({ type: 'L', quantity: 1, price: 0.5}, { expectFail: true, expectFailReason: 'limit order without side' }))
     .then(() => trader2.createOrder({ type: 'L', side: 'A', quantity: 1, price: 0.5}, { expectFail: true, expectFailReason: 'limit order with invalid side' }))
 
-    .then(() => trader2.createOrder({ type: 'L', side: '1', quantity: 1, price: 0.5}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'L', side: 1, quantity: 1, price: 0.5}, { expectFail: true,
       expectFailReason: 'limit order with side as integer' }))
 
     //  test for qty
@@ -91,7 +91,7 @@ function testStopOrder(trader3) {
     .then(() => trader3.createOrder({ market: 'BTC', type: 'S', side: 'S', quantity: 0.5}, {expectFail: true,
       expectFailReason: 'stop order with invalid market'}))
 
-    .then(() => trader3.createOrder({ market: '1', type: 'S', side: 'S', quantity: 0.5}, {expectFail: true,
+    .then(() => trader3.createOrder({ market: 1, type: 'S', side: 'S', quantity: 0.5}, {expectFail: true,
       expectFailReason: 'stop order with market as integer'}))
 
     // test for side
@@ -99,7 +99,7 @@ function testStopOrder(trader3) {
     .then(() => trader3.createOrder({type: 'S', side: 'A', quantity: 0.5}, {expectFail: true,
       expectFailReason: 'stop order with invalid side'}))
 
-    .then(() => trader3.createOrder({type: 'S', side: '1', quantity: 0.5}, {expectFail: true,
+    .then(() => trader3.createOrder({type: 'S', side: 1, quantity: 0.5}, {expectFail: true,
       expectFailReason: 'stop order with side as integer'}))
 
     .then(() => trader3.createOrder({type: 'S', quantity: 0.5}, {expectFail: true,
@@ -144,7 +144,7 @@ function testStopLimitOrder(trader2) {
     .then(() => trader2.createOrder({ market: 'BTC', type: 'SL', side: 'B', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with 0 stop value' }))
 
-    .then(() => trader2.createOrder({ market: '1', type: 'SL', side: 'B', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ market: 1, type: 'SL', side: 'B', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order market as string' }))
 
     // test for side
@@ -155,34 +155,34 @@ function testStopLimitOrder(trader2) {
     .then(() => trader2.createOrder({ type: 'SL', side: 'A', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with invalid side' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 1, quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with side as integer' }))
 
     // test for qty
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', quantity: 0, price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'B', quantity: 0, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with qty 0' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', quantity: -0.5, price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'B', quantity: -0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with negative qty' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', quantity: 'Q', price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'B', quantity: 'Q', price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with qty as string' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', price:0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'B', price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order without qty' }))
 
     // test for price
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', price: 0, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'S', price: 0, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with price 0' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', price: -0.25, stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'S', price: -0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with negative price' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', price: 'P', stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'S', price: 'P', stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order with price as string' }))
 
-    .then(() => trader2.createOrder({ type: 'SL', side: '1', stop: 0}, { expectFail: true,
+    .then(() => trader2.createOrder({ type: 'SL', side: 'S', stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order without price' }))
 
 
@@ -211,7 +211,7 @@ function testTrailingStopOrder(trader3) {
     .then(() => trader3.createOrder({ market: 'BTC', type: 'ST', side: 'S', quantity: 0.5, trailType: 'R' ,trail: 0.5}, { expectFail: true,
       expectFailReason: 'trail stop order with invalid market' }))
 
-    .then(() => trader3.createOrder({ market: '1', type: 'ST', side: 'S', quantity: 0.5, trailType: 'O' ,trail: 0.5}, { expectFail: true,
+    .then(() => trader3.createOrder({ market: 1, type: 'ST', side: 'S', quantity: 0.5, trailType: 'O' ,trail: 0.5}, { expectFail: true,
       expectFailReason: 'trail stop order with market as integer' }))
 
 
