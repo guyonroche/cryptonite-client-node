@@ -19,8 +19,6 @@ function testMarketOrder(trader1) {
   return Promish.resolve()
   // test of market property
     .then(() => trader1.createOrder({ market: 'BTC', type: 'M', side: 'B', quantity: 1}, { expectFail: true , expectFailReason: 'due to invalid market'}))
-    .then(() => trader1.createOrder({ market: '', type: 'M', side: 'B', quantity: 1}, { expectFail: true , expectFailReason: 'market order without market'}))
-
     .then(() => trader1.createOrder({ market: '1', type: 'M', side: 'B', quantity: 1}, { expectFail: true ,
       expectFailReason: 'market value as integer without market'}))
 
@@ -52,7 +50,6 @@ function testLimitOrder(trader2) {
     .then(() => trader2.createOrder({ market: 'BTC', type: 'L', quantity: 1, price: 0.5}, { expectFail: true,
       expectFailReason: 'limit order with invalid market' }))
 
-    .then(() => trader2.createOrder({ market: '', side: 'B', quantity: 1, price: 0.5}, { expectFail: true, expectFailReason: 'limit order without market' }))
     .then(() => trader2.createOrder({ market: '1', type: 'L', side: 'A', quantity: 1, price: 0.5}, { expectFail: true,
       expectFailReason: 'limit order market value as integer' }))
 
@@ -148,9 +145,6 @@ function testStopLimitOrder(trader2) {
       expectFailReason: 'stop limit order with 0 stop value' }))
 
     .then(() => trader2.createOrder({ market: '1', type: 'SL', side: 'B', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
-      expectFailReason: 'stop limit order market as string' }))
-
-    .then(() => trader2.createOrder({ market: '', type: 'SL', side: 'B', quantity: 0.5, price:0.25, stop: 0}, { expectFail: true,
       expectFailReason: 'stop limit order market as string' }))
 
     // test for side
@@ -291,7 +285,11 @@ function testInvalidOrderType(trader1) {
       expectFailReason: 'order without type' }))
 
     .then(() => trader1.createOrder({ type: 1, side: 'B', quantity: 1, price: 0.5}, { expectFail: true,
-      expectFailReason: 'order with type as integer' }));
+      expectFailReason: 'order with type as integer' }))
+
+    .then(() => trader1.createOrder({ type: 'Foo', side: 'B', quantity: 1, price: 0.5}, { expectFail: true,
+      expectFailReason: 'order with invalid type as Foo' }));
+
 }
 
 module.exports = {

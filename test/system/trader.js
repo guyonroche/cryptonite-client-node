@@ -287,7 +287,7 @@ class Trader {
       .then(
         result => {
           if (options.expectFail) {
-            throw new Error('Create Order failed due to  ' + options.expectFailReason);
+            throw new Error('Create Order succeeded but was expected to fail due to  ' + options.expectFailReason);
           }
 
           // add order to list
