@@ -300,7 +300,7 @@ class Trader {
         },
         error => {
           if (options.expectFail) {
-            console.log('Create Order failed but this was expected.');
+            console.log('Create Order failed due to', options.expectFailReason);
             return;
           }
           throw error;
