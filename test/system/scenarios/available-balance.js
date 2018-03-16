@@ -15,10 +15,10 @@ const run = (trader1, trader2) => {
     .then(() => trader2.cancelAllOrders())
     .then(() => trader2.getCurrentBalance())
     .then(() => trader2.placeLimitOrder('B', ((trader2.getBalance().capital / 0.12) + 25), 0.12, { expectFail: true,
-      expectFailReason: 'enough capital to buy' }))
+      expectFailReason: "don't have enough capital to buy" }))
     .then(() => trader2.placeLimitOrder('B', (((trader2.getBalance().capital/0.12)/2)), 0.12))
     .then(() => trader2.placeLimitOrder('B', (((trader2.getBalance().capital * 2 / 0.12) * 3 / 4)), 0.12, { expectFail: true,
-      expectFailReason: 'enough capital to buy' }))
+      expectFailReason: "don't have enough capital to buy" }))
     .then(() => trader2.cancelAllOrders())
     .then(() => trader2.getCurrentBalance());
 };
