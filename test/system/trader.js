@@ -65,7 +65,9 @@ class Trader {
   _addMyOrder(order) {
     const index = this.orderIndex[order.orderId];
     if (index !== undefined) {
-      this.orders[index] = order;
+      if (order.version > this.orders[index].version) {
+        this.orders[index] = order;
+      }
     } else {
       this.orderIndex[order.orderId] = this.orders.length;
       this.orders.push(order);
@@ -114,6 +116,7 @@ class Trader {
     return this.client.getMyOrders()
       .then(({orders}) => {
         orders.forEach(order => this._addMyOrder(order));
+        console.log('orders', this.config.name, this.orders)
         return this.client.cancelAllOrders();
       })
       .then(() => this.waitFor(
