@@ -116,7 +116,6 @@ class Trader {
     return this.client.getMyOrders()
       .then(({orders}) => {
         orders.forEach(order => this._addMyOrder(order));
-        console.log('orders', this.config.name, this.orders)
         return this.client.cancelAllOrders();
       })
       .then(() => this.waitFor(
