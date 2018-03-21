@@ -43,7 +43,7 @@ function resetTraders(traders) {
 function runScenarios(traders) {
   if (arg.scenario) {
     return resetTraders(traders)
-      .then(() => scenarioList[arg.scenario](...traders));
+      .then(() => scenarioList[arg.scenario].run(...traders));
   } else {
     let promise = Promish.resolve();
     Object.values(scenarioList).forEach(scenario => {
