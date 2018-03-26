@@ -27,8 +27,9 @@ class Trader {
       console.log('message', JSON.stringify(m));
       switch (m.msg) {
         case 'my-orders':
-          m.orders.forEach(order => this._addMyOrder(order));
-
+          m.orders.forEach(order => {
+            this._addMyOrder(order);
+          });
           break;
         case 'my-trades':
           m.trades.forEach(trade => {
@@ -63,6 +64,9 @@ class Trader {
   }
 
   _addMyOrder(order) {
+    if (order.version === undefined) {
+      throw new Error('Unversioned order')
+    }
     const index = this.orderIndex[order.orderId];
     if (index !== undefined) {
       if (order.version > this.orders[index].version) {
@@ -85,6 +89,7 @@ class Trader {
       const id = uuid.v4();
       const timer = setTimeout(() => {
         delete this.waiters[id];
+        console.log('Trader orders', this.orders.map(order => JSON.stringify(order)));
         reject(error);
       }, timeout);
       this.waiters[id] = () => {
@@ -296,6 +301,7 @@ class Trader {
           order.orderId = result.orderId;
           order.isOpen = true;
           order.isBooked = false;
+          order.version = -1;
           this._addMyOrder(order);
 
           console.log((order.side === 'B' ? 'Buy' : 'Sell'), 'Quantity is', order.quantity, 'price is' , order.price, 'order placed', this.config.name);
