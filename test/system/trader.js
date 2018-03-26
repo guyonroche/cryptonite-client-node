@@ -65,7 +65,7 @@ class Trader {
 
   _addMyOrder(order) {
     if (order.version === undefined) {
-      throw new Error('Unversioned order')
+      throw new Error('Unversioned order');
     }
     const index = this.orderIndex[order.orderId];
     if (index !== undefined) {
