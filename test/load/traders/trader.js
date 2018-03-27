@@ -96,7 +96,7 @@ class Trader {
 
   cleanUp() {
     // ensure trader has no open orders
-    return this.client.getMyOrders()
+    return this.client.getMyOrders(this.market)
       .then(({orders}) => {
         orders.forEach(order => this._addMyOrder(order));
         return this.client.cancelAllOrders();

@@ -118,7 +118,7 @@ class Trader {
 
   cleanUp() {
     // ensure trader has no open orders
-    return this.client.getMyOrders()
+    return this.client.getMyOrders(this.market)
       .then(({orders}) => {
         orders.forEach(order => this._addMyOrder(order));
         return this.client.cancelAllOrders();
@@ -179,7 +179,7 @@ class Trader {
 
   cancelOrderById(orderId) {
     console.log('Cancelling Order', orderId);
-    return this.client.cancelOrder(orderId);
+    return this.client.cancelOrder(this.market, orderId);
   }
 
   placeLimitOrder(side, quantity, price,  options = {} ) {
@@ -317,7 +317,8 @@ class Trader {
   }
 
   getMyOrders() {
-    return this.client.getMyOrders()
+    console.log('getMyOrders', this.market);
+    return this.client.getMyOrders(this.market)
       .then(data => {
         console.log('my orders ', data, this.config.name);
       });

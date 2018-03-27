@@ -2,11 +2,12 @@ const CryptoniteClient = require('../../lib/cryptonite-client');
 const config = require('./config.json');
 
 
-const orderId = process.argv[2];
+const market = process.argv[2];
+const orderId = process.argv[3];
 
 const client = new CryptoniteClient(config);
 
-client.cancelOrder(orderId)
+client.cancelOrder(market, orderId)
   .then(result => {
     console.log(result);
   })

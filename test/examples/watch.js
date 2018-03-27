@@ -30,9 +30,12 @@ client.connect()
       const options = {};
       switch (channel) {
         case 'level':
-        case 'trade-history':
         case 'trade':
           options.market = rest[0];
+          break;
+        case 'trade-history':
+          options.market = rest[0];
+          options.size = rest[1];
           break;
       }
 
