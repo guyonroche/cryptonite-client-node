@@ -23,26 +23,27 @@ client.on('message', message => {
 });
 
 client.connect()
-  .then(() => {
-    console.log('Listening to web socket...');
-    commander.subscribe.forEach(subscription => {
-      const [channel, ...rest] = subscription.split(':');
-      const options = {};
-      switch (channel) {
-        case 'level':
-        case 'trade':
-          options.market = rest[0];
-          break;
-        case 'trade-history':
-          options.market = rest[0];
-          options.size = rest[1];
-          break;
-      }
-
-      console.log(`Subscribing to ${channel}`, options);
-      client.subscribe(channel, options);
-    });
-  })
   .catch(error => {
     console.error(error.stack);
   });
+
+client.on('ready', () => {
+  console.log('Listening to web socket...');
+  commander.subscribe.forEach(subscription => {
+    const [channel, ...rest] = subscription.split(':');
+    const options = {};
+    switch (channel) {
+      case 'level':
+      case 'trade':
+        options.market = rest[0];
+        break;
+      case 'trade-history':
+        options.market = rest[0];
+        options.size = rest[1];
+        break;
+    }
+
+    console.log(`Subscribing to ${channel}`, options);
+    client.subscribe(channel, options);
+  });
+});
