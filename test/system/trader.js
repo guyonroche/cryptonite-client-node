@@ -15,7 +15,7 @@ let orderbook = {};
 class Trader {
   constructor(config) {
     this.config = config;
-    this.client = new CryptoniteClient(this.config);
+    this.client = new CryptoniteClient(this.config.client);
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
   }
@@ -52,6 +52,12 @@ class Trader {
               this.transactions.push(transaction);
             }
           });
+          break;
+        case 'open-markets':
+          this.openMarkets = m.markets.reduce((acc, market) => {
+            acc[market] = true;
+            return acc;
+          }, {});
           break;
       }
       // trigger all waiters...

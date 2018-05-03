@@ -57,8 +57,15 @@ function runScenarios(traders) {
   }
 }
 
+function waitForOpenMarket(traders) {
+  const trader = traders[0];
+  return Promish.resolve()
+    .then(() => trader.waitFor(() => trader.openMarkets['LTC/BTC'], 'Open Markets', 60000));
+}
+
 function runSequence(traders) {
   return Promish.resolve()
+    .then(() => waitForOpenMarket(traders))
     .then(() => runScenarios(traders))
     .then(() => result(traders))
     .then(() => process.exit(0));
