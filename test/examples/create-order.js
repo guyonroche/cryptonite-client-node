@@ -27,13 +27,13 @@ commander
     }
     if (isMarketOrder(type)) {
       if (isBuySide(side)) {
-        order.value = quantity;
+        order.value = parseFloat(quantity);
       } else {
-        order.quantity = quantity;
+        order.quantity = parseFloat(quantity);
       }
     } else {
-      order.quantity = quantity;
-      order.price = price;
+      order.quantity = parseFloat(quantity);
+      order.price = parseFloat(price);
     }
     if (isStopOrder(type)) {
       if (!options.stop) {
