@@ -19,7 +19,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "moment": "^2.21.0",
-    "promish": "^5.0.2",
+    "promish": "^5.1.0",
     "ws": "^4.1.0"
   },
   "devDependencies": {
