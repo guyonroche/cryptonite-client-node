@@ -13,9 +13,14 @@ const dblEq = (a, b) => Math.abs(a - b) < 1e-8;
 let orderbook = {};
 
 class Trader {
-  constructor(config) {
+  constructor(config, options) {
     this.config = config;
-    this.client = new CryptoniteClient(this.config.client);
+
+    const clientConfig = {
+      ...this.config.client,
+      options,
+    };
+    this.client = new CryptoniteClient(clientConfig);
     this.market = 'LTC/BTC';
     orderbook[this.config.name] = { 'B' : { prices: [], quantities: [] }, 'S' : { prices: [], quantities: [] }};
   }

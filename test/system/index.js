@@ -21,9 +21,9 @@ const scenarioList = fs.readdirSync(`${__dirname}/scenarios/`)
 
 let arg = [];
 
-function createTraders(traders) {
+function createTraders(traders, options) {
   const promises = traders.map(t => {
-    const trader = new Trader(t);
+    const trader = new Trader(t, options);
     return trader.initialise()
       .then(() => trader);
   });
@@ -73,8 +73,8 @@ function runSequence(traders) {
 
 Commander.init(arg, Object.keys(scenarioList));
 const config = JSON.parse(fs.readFileSync(arg.config).toString());
-
-createTraders(config.traders)
+const options = {verbose: arg.verbose};
+createTraders(config.traders, options)
   .then(runSequence)
   .catch(error => {
     console.error(error.stack);

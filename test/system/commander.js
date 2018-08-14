@@ -4,6 +4,7 @@ const fs = require('fs');
 const Commander = (arg, allowedScenarios) => {
   program
     .version('0.1.0')
+    .option('-v, --verbose', 'verbose', false)
     .option('-s, --scenario <scenarioName>', 'choose scenario')
     .option('-c, --config <config>', 'choose config file', './configs/config.json')
     .parse(process.argv);
@@ -27,6 +28,8 @@ const Commander = (arg, allowedScenarios) => {
       process.exit(1);
     }
   }
+
+  arg.verbose = program.verbose;
 };
 
 module.exports = {
