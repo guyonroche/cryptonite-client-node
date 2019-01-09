@@ -1,15 +1,26 @@
+const fs = require('fs');
+const commander = require('commander');
 const CryptoniteClient = require('../../lib/cryptonite-client');
-const config = require('./config.json');
+const packageConfig = require('../../package');
 
-const client = new CryptoniteClient(config);
+commander
+  .version(packageConfig.version)
+  .arguments('')
+  .option('-c, --config <filename>', 'Config file', './config.json')
+  .option('-m, --market <market>', 'Market')
+  .option('-s, --start <start>', 'Start of query', Date.now() * 1000)
+  .option('-l, --limit <limit>', 'Limit of query', 10)
+  .option('-v, --verbose', 'Verbose', false);
 
-const market = process.argv[2];
-const start = process.argv[3];
-const limit = process.argv[4];
+commander.parse(process.argv);
 
-client.getMyTrades(market, start, limit)
+const config = JSON.parse(fs.readFileSync(commander.config));
+const options = {verbose: commander.verbose};
+const client = new CryptoniteClient({...config, options});
+
+client.getMyTrades(commander.market, commander.start, commander.limit)
   .then(result => {
-    console.log(result);
+    console.log(JSON.stringify(result));
   })
   .catch(error => {
     console.error(error.stack);
